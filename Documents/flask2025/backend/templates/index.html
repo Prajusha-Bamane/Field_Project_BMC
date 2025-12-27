@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Crop Advisory</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <h2>AI Crop Advisory System</h2>
+
+    <select id="soil">
+      <option value="">Select Soil Type</option>
+      <option value="black">Black</option>
+      <option value="loamy">Loamy</option>
+      <option value="clay">Clay</option>
+      <option value="sandy">Sandy</option>
+    </select>
+
+    <select id="season">
+      <option value="">Select Season</option>
+      <option value="kharif">Kharif</option>
+      <option value="rabi">Rabi</option>
+      <option value="summer">Summer</option>
+    </select>
+
+    <select id="rainfall">
+      <option value="">Rainfall Level</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <input type="number" id="temp" placeholder="Temperature (°C)">
+
+    <button onclick="getPrediction()">Get Crop Recommendation</button>
+
+    <p id="result"></p>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

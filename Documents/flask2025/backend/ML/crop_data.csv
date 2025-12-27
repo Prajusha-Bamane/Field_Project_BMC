@@ -1,0 +1,8 @@
+soil,season,rainfall,temp,crop
+black,kharif,high,30,cotton
+black,kharif,medium,28,cotton
+loamy,rabi,low,20,wheat
+clay,kharif,high,32,rice
+loamy,summer,medium,35,maize
+sandy,summer,low,40,groundnut
+clay,rabi,medium,22,wheat

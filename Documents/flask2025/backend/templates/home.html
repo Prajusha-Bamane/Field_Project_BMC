@@ -1,0 +1,676 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pratice</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+     <nav class="navbar">
+       <div class="logo border">Farmer</div>
+         <ul class="nav-links" id="navlink">
+        <li class="border"><a href="#">Home</a></li>
+        <li class="border" ><a href="#">About</a></li>
+        <li class="border"><a href="#">Services</a></li>
+        <li class="border"><a href="#">Contact</a></li>
+         </ul>
+        
+     </nav>
+     
+     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{{ url_for('static', filename='image/farmer.jpg') }}" class="d-block w-100 " alt="...">
+        <div class="carousel-caption">
+        <h2>Empowering Farmers for a Better Tomorrow</h2>
+        <p>Guidance, resources and support for every farmer.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{{ url_for('static', filename='image/farmer2.jpg') }}" class="d-block w-100" alt="...">
+      <div class="carousel-caption">
+        <h2>Know Your Crop, Grow Your Profit</h2>
+        <p>Get crop advice and smart farming tips.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{{ url_for('static', filename='image/farmer4.jpg') }}" class="d-block w-100" alt="...">
+      <div class="carousel-caption">
+        <h2>Latest Government Schemes for Farmers</h2>
+        <p>Stay updated with subsidies and benefits.</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+<section id="about-section" class="id1">
+  <h1 class="h11">Namaste Farmer! Your Smart Agriculture Partner</h1><br>
+<div class="master">
+
+    <div class="left-side">-->
+        <!--<img src="{{ url_for('static', filename='image/digital1.jpg') }}" class="left-img">-->
+
+    <!-- Big Image -->
+    <!--<img src="{{ url_for('static', filename='image/digital1.jpg') }}" class="left-img">-->
+
+    <!-- Quick Stats -->
+    <!--<div class="stats-box">
+        <h3>📊 Farmer Stats</h3>
+        <ul>
+            <li>10,000+ Farmers Helped</li>
+            <li>500+ Weather Alerts</li>
+            <li>200+ Farming Tips</li>
+            <li>50+ Crop Guides</li>
+        </ul>
+    </div>-->
+
+    <!-- Why Choose Us -->
+    <!--<div class="why-box">
+        <h3>🌟 Why Choose Us?</h3>
+        <ul>
+            <li>Easy Language</li>
+            <li>Real Farmer Community</li>
+            <li>Updated Govt. Schemes</li>
+            <li>Market Price Alerts</li>
+        </ul>
+    </div>
+
+</div>
+
+    
+
+     <div class="container1">
+       <h1 class="id2">About Us</h1>
+
+       <p class="p1">
+      Our website is created to support farmers by providing crop information,
+      modern techniques, weather updates, and government schemes.
+      We aim to make farming easier, smarter, and more profitable.
+       </p>
+     <div class="container2">
+       <h3 class="id2">Our Mission</h3>
+       <p class="p1">
+      To empower farmers with knowledge and digital tools so they can improve
+      productivity and income.
+       </p>
+     </div>
+
+    <div class="container3">
+        <h3 class="id2">Our Vision</h3>
+        <p class="p1">
+      To create a digital platform where every farmer gets instant help and 
+      trustworthy information.
+        </p>
+
+        <h3 class="id2">What We Provide?</h3>
+        <p class="p2">
+      1.Crop Information<br>
+      2.Government Schemes<br>
+      3.Market Prices<br>
+      4.Weather Alerts<br>
+      5.Modern Farming Tips<br>
+      6.Support and Help
+        </p>
+      </div>
+
+    <div class="container4">
+    <h3 class="id2">Developed By</h3>
+    <p class="p1">
+      Sanika Shreeram Palav<br>
+      Diploma/B.Tech in (Information technology)<br>
+      (VESIT, Mumbai)
+    </p>
+    </div>
+  </div>
+</div>
+
+</section>
+
+<section class="buy-section">
+   <div class="container">
+  <div class="row">
+    
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='image/seed.jpg') }}" class="card-img-top" alt="invalid" style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Seeds & Plants</h5>
+            <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='image/fertilizer.jpg') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Fertilizers & Soil Products</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='image/heavyequi.png') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Tools & Equipment</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='image/irrigationsystem.jpg') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Irrigation Systems</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='image/animalhusbandary.png') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Animal Husbandry</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='image/toptool.jpg') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Farm Accessories</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+ 
+</section>
+  <div class="se1"> our Services</div>
+<section class="service-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="service-box">
+          <h3>real video guidance</h3>
+          <p>I am taking real interview of farmer for oother farmer guidance.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-box">
+          <h3>crop desease detection</h3>
+          <p>crop desease detect using trending technology.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-box">
+          <h3>Government schemes</h3>
+          <p>Here farmer get update about schemes.</p>
+        </div>
+      </div>
+      </div>
+  </div>
+</section>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{ url_for('static', filename='image/AIMLimage.png') }}" class="img-fluid samesize">
+    </div>
+    <div class="col-md-6">
+      <img src="{{ url_for('static', filename='image/digital2.jpg') }}" class="img-fluid samesize">
+    </div>
+  </div>
+</div>
+
+<footer class="footer1">
+       <div class="foot-con">
+              <div class="foot-row">
+                  <div class="foot-col">
+                          <h3 class="foottitle"><i class="fa-solid fa-wheat-awn abc "></i>farmer </h3>
+                               <p>This is trusted platform for crop guidnce,cropndesease detection,real video bsdbs.
+                            </p>
+                  </div>
+                  <div class="foot-col">
+                           <h4>QUICK LINK</h4>
+                           <ul>
+        
+                              <li><a href="#">home</a></li>
+                              <li><a href="#">video</a></li>
+                              <li><a href="#">contact</a></li>
+      
+
+                            </ul>
+
+                  </div>
+                  <div class="foot-col">
+                            <h4>SUPPORT</h4>
+                            <ul>
+                             <li><a href="#">help center</a></li>
+                             <li><a href="#">farmer helpline</a></li>
+                             <li><a href="#">crop insurance</a></li>
+                           </ul>
+                   </div>
+                   <div class="foot-col">
+                             <h4>CONTACT</h4>
+                               <p><i class="fa-solid fa-envelope abc"></i>email:palavsanika62@gmail.com</p>
+                               <p><i class="fa-solid fa-phone abc"></i>phone:9404780064</p>
+                       <div class="foot-col1">
+
+                               <i class="fa-brands fa-youtube"></i>
+                               <i class="fa-solid fa-envelope"></i>
+                               <i class="fa-brands fa-google"></i>
+
+
+                        </div>
+
+
+                    </div>
+         </div>
+<hr>
+ <p class="foot-bottom">© 2024 FarmerHelp | All Rights Reserved</p>
+
+ </div>
+
+</footer>-->
+
+
+
+
+
+
+
+
+
+
+
+<!--<footer class="farmer-footer">
+  <div class="footer-container">
+    <div class="footer-row">
+
+     
+      <div class="footer-col">
+        <h3 class="footer-title"><i class="fa-solid fa-wheat-awn"></i> FarmerHelp</h3>
+        <p>Your trusted platform for crop guidance, market rates, weather updates, and modern farming techniques.</p>
+      </div>
+
+     
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Schemes</a></li>
+          <li><a href="#">Market Prices</a></li>
+          <li><a href="#">Soil Testing</a></li>
+        </ul>
+      </div>
+
+      
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Farmer Helpline</a></li>
+          <li><a href="#">Crop Insurance</a></li>
+          <li><a href="#">Weather Alerts</a></li>
+        </ul>
+      </div>
+
+      
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: support@farmerhelp.com</p>
+        <p><i class="fa-regular fa-phone"></i> Phone: +91 98765 43210</p>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2025 FarmerHelp | All Rights Reserved
+    </div>
+  </div>
+</footer>-->
+
+
+
+
+
+   
+
+     
+
+     <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  
+</body>
+</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pratice</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Local Bootstrap CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+     <nav class="navbar">
+       <div class="logo border">Farmer</div>
+         <ul class="nav-links" id="navlink">
+        <li class="border"><a href="#">Home</a></li>
+        <li class="border" ><a href="#">About</a></li>
+        <li class="border"><a href="#">Services</a></li>
+        <li class="border"><a href="#">Contact</a></li>
+         </ul>
+        
+     </nav>
+     
+     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{{ url_for('static', filename='images/farmer.jpg') }}" class="d-block w-100 " alt="...">
+        <div class="carousel-caption">
+        <h2>Empowering Farmers for a Better Tomorrow</h2>
+        <p>Guidance, resources and support for every farmer.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{{ url_for('static', filename='images/farmer2.jpg') }}" class="d-block w-100" alt="...">
+      <div class="carousel-caption">
+        <h2>Know Your Crop, Grow Your Profit</h2>
+        <p>Get crop advice and smart farming tips.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{{ url_for('static', filename='images/farmer4.jpg') }}" class="d-block w-100" alt="...">
+      <div class="carousel-caption">
+        <h2>Latest Government Schemes for Farmers</h2>
+        <p>Stay updated with subsidies and benefits.</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+<section id="about-section" class="id1">
+  <h1 class="h11">Namaste Farmer! Your Smart Agriculture Partner</h1><br>
+<div class="master">
+  
+    <div class="left-side">
+
+    <!-- Big Image -->
+    <img src="{{ url_for('static', filename='images/digital1.jpg') }}" class="left-img">
+
+    <!-- Quick Stats -->
+    <div class="stats-box">
+        <h3>📊 Farmer Stats</h3>
+        <ul>
+            <li>10,000+ Farmers Helped</li>
+            <li>500+ Weather Alerts</li>
+            <li>200+ Farming Tips</li>
+            <li>50+ Crop Guides</li>
+        </ul>
+    </div>
+
+    <!-- Why Choose Us -->
+    <div class="why-box">
+        <h3>🌟 Why Choose Us?</h3>
+        <ul>
+            <li>Easy Language</li>
+            <li>Real Farmer Community</li>
+            <li>Updated Govt. Schemes</li>
+            <li>Market Price Alerts</li>
+        </ul>
+    </div>
+
+</div>
+
+    
+
+     <div class="container1">
+       <h1 class="id2">About Us</h1>
+
+       <p class="p1">
+      Our website is created to support farmers by providing crop information,
+      modern techniques, weather updates, and government schemes.
+      We aim to make farming easier, smarter, and more profitable.
+       </p>
+     <div class="container2">
+       <h3 class="id2">Our Mission</h3>
+       <p class="p1">
+      To empower farmers with knowledge and digital tools so they can improve
+      productivity and income.
+       </p>
+     </div>
+
+    <div class="container3">
+        <h3 class="id2">Our Vision</h3>
+        <p class="p1">
+      To create a digital platform where every farmer gets instant help and 
+      trustworthy information.
+        </p>
+
+        <h3 class="id2">What We Provide?</h3>
+        <p class="p2">
+      1.Crop Information<br>
+      2.Government Schemes<br>
+      3.Market Prices<br>
+      4.Weather Alerts<br>
+      5.Modern Farming Tips<br>
+      6.Support and Help
+        </p>
+      </div>
+
+    <div class="container4">
+    <h3 class="id2">Developed By</h3>
+    <p class="p1">
+      Sanika Shreeram Palav<br>
+      Diploma/B.Tech in (Information technology)<br>
+      (VESIT, Mumbai)
+    </p>
+    </div>
+  </div>
+</div>
+
+</section>
+
+<section class="buy-section">
+   <div class="container">
+  <div class="row">
+    
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/seed.jpg') }}" class="card-img-top" alt="invalid" style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Seeds & Plants</h5>
+            <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/fertilizer.jpg') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Fertilizers & Soil Products</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/heavyequi.png') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Tools & Equipment</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/irrigationsystem.jpg') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Irrigation Systems</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/animalhusbandary.png') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Animal Husbandry</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/toptool.jpg') }}" class="card-img-top" alt="..." style="height: 250px;">
+        <div class="card-body">
+          <h5 class="card-title">Farm Accessories</h5>
+          <a href="#" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+ 
+</section>
+  <div class="se1"> our Services</div>
+<section class="service-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="service-box">
+          <h3>real video guidance</h3>
+          <p>I am taking real interview of farmer for oother farmer guidance.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-box">
+          <h3>crop desease detection</h3>
+          <p>crop desease detect using trending technology.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-box">
+          <h3>Government schemes</h3>
+          <p>Here farmer get update about schemes.</p>
+        </div>
+      </div>
+      </div>
+  </div>
+</section>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{ url_for('static', filename='images/AIMLimage.png') }}" class="img-fluid samesize">
+    </div>
+    <div class="col-md-6">
+      <img src="{{ url_for('static', filename='images/digital2.jpg') }}" class="img-fluid samesize">
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer1">
+    <footer class="farmer-footer">
+  <div class="footer-container">
+    <div class="footer-row">
+
+     
+      <div class="footer-col">
+        <h3 class="footer-title"><i class="fa-solid fa-wheat-awn"></i> FarmerHelp</h3>
+        <p>Your trusted platform for crop guidance, market rates, weather updates, and modern farming techniques.</p>
+      </div>
+
+     
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Schemes</a></li>
+          <li><a href="#">Market Prices</a></li>
+          <li><a href="#">Soil Testing</a></li>
+        </ul>
+      </div>
+
+      
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Farmer Helpline</a></li>
+          <li><a href="#">Crop Insurance</a></li>
+          <li><a href="#">Weather Alerts</a></li>
+        </ul>
+      </div>
+
+      
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: support@farmerhelp.com</p>
+        <p><i class="fa-regular fa-phone"></i> Phone: +91 98765 43210</p>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2025 FarmerHelp | All Rights Reserved
+    </div>
+  </div>
+</footer>
+
+</footer>
+
+<!-- Local Bootstrap JS -->
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<!-- Your custom JS -->
+<!--<script src="{{ url_for('static', filename='js/script.js') }}"></script>-->
+
+</body>
+</html>
+
+
+
+
+
+
