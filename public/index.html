@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#16a34a"/>
+  <title>ReUse BMC</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon" href="/icon.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; background: #d1fae5; display: flex; justify-content: center; }
+    .splash {
+      width: 100%; max-width: 430px; height: 100vh;
+      background: linear-gradient(160deg, #16a34a 0%, #166534 100%);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      gap: 16px; animation: fadeIn 0.5s ease;
+      position: relative; overflow: hidden;
+    }
+    .splash::before {
+      content: ''; position: absolute;
+      width: 300px; height: 300px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%; top: -100px; right: -80px;
+    }
+    .splash::after {
+      content: ''; position: absolute;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%; bottom: -60px; left: -50px;
+    }
+    .emoji { font-size: 90px; animation: bounce 1s ease infinite alternate; }
+    @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+    h1 { font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 800; color: white; letter-spacing: -1px; }
+    p { font-family: 'Poppins', sans-serif; font-size: 14px; color: rgba(255,255,255,0.8); font-weight: 500; }
+    .dots { display: flex; gap: 8px; margin-top: 30px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.4); animation: pulse 1.2s ease infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,100% { background: rgba(255,255,255,0.4); transform: scale(1); } 50% { background: white; transform: scale(1.3); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="splash">
+    <div class="emoji">♻️</div>
+    <h1>ReUse BMC</h1>
+    <p>Donate. Reuse. Reduce Waste.</p>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <script>
+    // Check auth token and redirect
+    setTimeout(() => {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (token && user) {
+        if (user.role === 'donor') window.location.href = '/donor';
+        else if (user.role === 'ngo') window.location.href = '/ngo';
+        else if (user.role === 'admin') window.location.href = '/admin';
+      } else {
+        window.location.href = '/login';
+      }
+    }, 2000);
+  </script>
+</body>
+</html>

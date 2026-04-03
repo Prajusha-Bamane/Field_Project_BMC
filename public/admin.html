@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta name="theme-color" content="#16a34a"/>
+  <title>BMC Admin – ReUse BMC</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon" href="/icon.svg"/>
+  <link rel="stylesheet" href="/styles.css"/>
+  <style>
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; justify-content:center; align-items:flex-end; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:white; width:100%; max-width:430px; border-radius:20px 20px 0 0; padding:24px; max-height:80vh; overflow-y:auto; animation:slideUp 0.3s ease; }
+    @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+    .modal-title { font-size:16px; font-weight:700; margin-bottom:16px; }
+    .officer-option { padding:14px; border:2px solid #e5e7eb; border-radius:12px; margin-bottom:8px; cursor:pointer; transition:all 0.15s; }
+    .officer-option:hover { border-color:#16a34a; background:#f0fdf4; }
+    .officer-option h4 { font-size:14px; font-weight:600; }
+    .officer-option p { font-size:12px; color:#6b7280; margin-top:2px; }
+    .map-modal { width:100%; height:220px; border-radius:12px; border:none; margin-bottom:12px; }
+    .user-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #f3f4f6; }
+    .user-row-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#16a34a,#166534); color:white; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+    .user-row-info { flex:1; min-width:0; }
+    .user-row-info h4 { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .user-row-info p { font-size:11px; color:#9ca3af; }
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="app-shell">
+
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="header">
+      <div class="header-row">
+        <div>
+          <p style="font-size:12px;opacity:0.8;">BMC Admin Panel 🏛️</p>
+          <h2 id="admin-name">Officer</h2>
+          <p>Platform Overview</p>
+        </div>
+        <button class="header-icon-btn" onclick="showPage('page-profile')">👤</button>
+      </div>
+    </div>
+    <div class="scroll-content" style="margin-top:20px;">
+      <div class="stats-grid-2" id="admin-stats">
+        <div class="stat-card-lg"><div class="sc-icon">📦</div><div class="sc-num" id="st-total">-</div><div class="sc-label">Total Donations</div></div>
+        <div class="stat-card-lg"><div class="sc-icon">📋</div><div class="sc-num" id="st-listed">-</div><div class="sc-label">Pending</div></div>
+        <div class="stat-card-lg"><div class="sc-icon">🚗</div><div class="sc-num" id="st-assigned">-</div><div class="sc-label">Assigned</div></div>
+        <div class="stat-card-lg"><div class="sc-icon">✅</div><div class="sc-num" id="st-dist">-</div><div class="sc-label">Distributed</div></div>
+      </div>
+      <div class="stats-row" style="margin-bottom:16px;">
+        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-num" id="st-users">-</div><div class="stat-label">Total Users</div></div>
+        <div class="stat-card"><div class="stat-icon">🏢</div><div class="stat-num" id="st-ngos">-</div><div class="stat-label">NGOs</div></div>
+        <div class="stat-card"><div class="stat-icon">👮</div><div class="stat-num" id="st-officers">-</div><div class="stat-label">Officers</div></div>
+      </div>
+      <div class="section-heading">Quick Actions</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <button class="btn btn-outline" onclick="showPage('page-donations')" style="flex-direction:column;gap:4px;height:70px;border-radius:14px;">
+          <span style="font-size:24px;">📦</span><span style="font-size:12px;">All Donations</span>
+        </button>
+        <button class="btn btn-outline" onclick="showPage('page-users')" style="flex-direction:column;gap:4px;height:70px;border-radius:14px;">
+          <span style="font-size:24px;">👥</span><span style="font-size:12px;">Manage Users</span>
+        </button>
+      </div>
+      <div class="section-heading">Recent Pending 🔴</div>
+      <div id="dash-pending"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ALL DONATIONS PAGE -->
+  <div class="page" id="page-donations">
+    <div class="header">
+      <div class="header-row">
+        <div><h2>All Donations 📦</h2><p>Manage & assign pickups</p></div>
+      </div>
+    </div>
+    <div class="scroll-content" style="margin-top:20px;">
+      <div class="tabs" id="status-tabs">
+        <button class="tab active" onclick="filterStatus('all',this)">All</button>
+        <button class="tab" onclick="filterStatus('listed',this)">🔴 Pending</button>
+        <button class="tab" onclick="filterStatus('assigned',this)">🔵 Assigned</button>
+        <button class="tab" onclick="filterStatus('picked',this)">🟣 Picked</button>
+        <button class="tab" onclick="filterStatus('distributed',this)">🟢 Done</button>
+      </div>
+      <div id="all-donations-list"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- USERS PAGE -->
+  <div class="page" id="page-users">
+    <div class="header">
+      <div class="header-row">
+        <div><h2>Users 👥</h2><p>All registered users</p></div>
+      </div>
+    </div>
+    <div class="scroll-content" style="margin-top:20px;">
+      <div class="tabs">
+        <button class="tab active" onclick="filterUsers('all',this)">All</button>
+        <button class="tab" onclick="filterUsers('donor',this)">🏠 Donors</button>
+        <button class="tab" onclick="filterUsers('ngo',this)">🤝 NGOs</button>
+        <button class="tab" onclick="filterUsers('admin',this)">👮 Officers</button>
+      </div>
+      <div id="users-list"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="page-profile">
+    <div class="header"><div class="header-row"><div><h2>My Profile 👮</h2><p>BMC Officer Account</p></div></div></div>
+    <div class="scroll-content" style="margin-top:20px;">
+      <div class="card" style="text-align:center;">
+        <div class="avatar" id="prof-avatar">A</div>
+        <h3 id="prof-name" style="font-size:18px;font-weight:700;"></h3>
+        <p id="prof-email" style="font-size:13px;color:#6b7280;margin:4px 0;"></p>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:6px;">
+          <span class="badge badge-assigned">🏛️ BMC Officer</span>
+          <span id="prof-badge" class="badge badge-distributed"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#4b5563;"><span style="font-size:20px;">📞</span><span id="prof-phone">-</span></div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#4b5563;"><span style="font-size:20px;">🗺️</span><span id="prof-zone">-</span></div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#4b5563;"><span style="font-size:20px;">📍</span><span id="prof-addr">-</span></div>
+        </div>
+      </div>
+      <div id="my-assignments-section">
+        <div class="section-heading" style="margin-bottom:10px;">My Assigned Pickups</div>
+        <div id="my-assignments"><div class="loading-wrap"><div class="spinner"></div></div></div>
+      </div>
+      <button class="btn btn-danger" onclick="logout()" style="width:100%;margin-top:16px;">🚪 Logout</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-dashboard" onclick="showPage('page-dashboard')"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></button>
+    <button class="nav-item" id="nav-donations" onclick="showPage('page-donations')"><span class="nav-icon">📦</span><span class="nav-label">Donations</span></button>
+    <button class="nav-item" id="nav-users" onclick="showPage('page-users')"><span class="nav-icon">👥</span><span class="nav-label">Users</span></button>
+    <button class="nav-item" id="nav-profile" onclick="showPage('page-profile')"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></button>
+  </nav>
+</div>
+
+<!-- Officer assign modal -->
+<div class="modal-overlay" id="officer-modal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="modal-title" style="margin:0;">Assign Officer 👮</div>
+      <button onclick="closeModal('officer-modal')" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
+    </div>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:14px;" id="assign-item-name"></p>
+    <div id="officers-list-modal">Loading...</div>
+  </div>
+</div>
+
+<!-- NGO assign modal -->
+<div class="modal-overlay" id="ngo-modal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="modal-title" style="margin:0;">Assign to NGO 🤝</div>
+      <button onclick="closeModal('ngo-modal')" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
+    </div>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:14px;" id="assign-ngo-item-name"></p>
+    <div id="ngos-list-modal">Loading...</div>
+  </div>
+</div>
+
+<!-- Map view modal -->
+<div class="modal-overlay" id="map-modal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="modal-title" style="margin:0;">📍 Donor Location</div>
+      <button onclick="closeModal('map-modal')" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
+    </div>
+    <div id="map-modal-content"></div>
+    <div id="map-modal-info" style="font-size:13px;color:#4b5563;"></div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+<script>
+if (!requireAuth('admin')) {}
+const user = getUser();
+let allDonations = [], allUsers = [], currentStatusFilter = 'all', currentUserFilter = 'all';
+let pendingDonationId = null;
+
+// Set profile info
+document.getElementById('admin-name').textContent = (user?.name?.split(' ')[0] || 'Officer') + ' 👋';
+document.getElementById('prof-name').textContent = user?.name || '';
+document.getElementById('prof-email').textContent = user?.email || '';
+document.getElementById('prof-phone').textContent = user?.phone || 'Not set';
+document.getElementById('prof-zone').textContent = user?.zone ? 'Zone: ' + user.zone : 'Zone not set';
+document.getElementById('prof-addr').textContent = user?.address || 'Not set';
+document.getElementById('prof-avatar').textContent = (user?.name||'A')[0].toUpperCase();
+if (user?.badgeNumber) document.getElementById('prof-badge').textContent = '🪪 ' + user.badgeNumber;
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const map = {'page-dashboard':'nav-dashboard','page-donations':'nav-donations','page-users':'nav-users','page-profile':'nav-profile'};
+  if (map[id]) document.getElementById(map[id]).classList.add('active');
+  if (id === 'page-dashboard') loadDashboard();
+  if (id === 'page-donations') loadAllDonations();
+  if (id === 'page-users') loadUsers();
+  if (id === 'page-profile') loadMyAssignments();
+}
+
+async function loadDashboard() {
+  try {
+    const r = await api('/api/users/stats');
+    if (r?.ok) {
+      const s = r.data;
+      document.getElementById('st-total').textContent = s.totalDonations || 0;
+      document.getElementById('st-listed').textContent = s.listed || 0;
+      document.getElementById('st-assigned').textContent = s.assigned || 0;
+      document.getElementById('st-dist').textContent = s.distributed || 0;
+      document.getElementById('st-users').textContent = s.totalUsers || 0;
+      document.getElementById('st-ngos').textContent = s.ngos || 0;
+      document.getElementById('st-officers').textContent = s.officers || 0;
+    }
+    const rd = await api('/api/donations/pending');
+    if (rd?.ok) {
+      const el = document.getElementById('dash-pending');
+      if (!rd.data.length) { el.innerHTML = `<div class="empty-state"><div class="es-icon">🎉</div><h3>All caught up!</h3><p>No pending donations to assign</p></div>`; return; }
+      el.innerHTML = rd.data.slice(0,5).map(d => adminCard(d)).join('');
+    }
+  } catch(e) {}
+}
+
+async function loadAllDonations() {
+  const el = document.getElementById('all-donations-list');
+  el.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+  const r = await api('/api/donations');
+  if (!r?.ok) return;
+  allDonations = r.data;
+  renderDonations();
+}
+
+function filterStatus(status, el) {
+  currentStatusFilter = status;
+  document.querySelectorAll('#status-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderDonations();
+}
+
+function renderDonations() {
+  const el = document.getElementById('all-donations-list');
+  let items = allDonations;
+  if (currentStatusFilter !== 'all') items = items.filter(d => d.status === currentStatusFilter);
+  if (!items.length) { el.innerHTML = `<div class="empty-state"><div class="es-icon">📭</div><h3>No donations in this category</h3></div>`; return; }
+  el.innerHTML = items.map(d => adminCard(d)).join('');
+}
+
+function adminCard(d) {
+  return `<div class="donation-card">
+    <div class="donation-card-top">
+      <div>
+        <h4>${CAT_EMOJI[d.category]||'📦'} ${d.itemName}</h4>
+        <div class="cat">${d.category} · ${COND_LABEL[d.condition]||d.condition} · Qty: ${d.quantity||1}</div>
+      </div>
+      ${statusBadge(d.status)}
+    </div>
+    ${d.photos?.length ? `<div style="display:flex;gap:6px;margin:8px 0;">${d.photos.slice(0,3).map(p=>`<img src="${p}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">`).join('')}</div>` : ''}
+    <div class="meta">👤 Donor: <b>${d.donorName}</b>${d.donorPhone ? ' · 📞 '+d.donorPhone : ''}</div>
+    <div class="meta">📍 ${d.address}</div>
+    <div class="meta">📅 Listed: ${fmtDate(d.createdAt)}</div>
+    ${d.officerName ? `<div class="meta">👮 Officer: <span class="officer-chip">${d.officerName}</span></div>` : ''}
+    ${d.ngoName ? `<div class="meta">🤝 NGO: ${d.ngoName}</div>` : ''}
+    <div class="actions" style="margin-top:10px;flex-wrap:wrap;">
+      ${d.location?.lat ? `<button class="btn btn-blue btn-sm" onclick="viewMap('${d._id}','${d.address}',${d.location.lat},${d.location.lng})">🗺️ View Location</button>` : ''}
+      ${d.status === 'listed' ? `<button class="btn btn-orange btn-sm" onclick="openAssignOfficer('${d._id}','${d.itemName}')">👮 Assign Officer</button>` : ''}
+      ${d.status === 'assigned' ? `<button class="btn btn-primary btn-sm" onclick="markPicked('${d._id}')">📦 Mark Picked</button>` : ''}
+      ${d.status === 'picked' ? `<button class="btn btn-outline btn-sm" onclick="openAssignNGO('${d._id}','${d.itemName}')">🤝 Assign NGO</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// Map modal
+function viewMap(id, address, lat, lng) {
+  document.getElementById('map-modal-info').innerHTML = `<b>${address}</b><br><small>Lat: ${lat}, Lng: ${lng}</small><br><a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:#16a34a;font-weight:600;font-size:13px;">Open in Google Maps →</a>`;
+  document.getElementById('map-modal-content').innerHTML = `<iframe class="map-modal" src="https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed" allowfullscreen></iframe>`;
+  document.getElementById('map-modal').classList.add('open');
+}
+
+// Officer assign modal
+async function openAssignOfficer(donationId, itemName) {
+  pendingDonationId = donationId;
+  document.getElementById('assign-item-name').textContent = 'Item: ' + itemName;
+  document.getElementById('officer-modal').classList.add('open');
+  const el = document.getElementById('officers-list-modal');
+  el.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+  const r = await api('/api/users/officers');
+  if (!r?.ok) { el.innerHTML = 'Failed to load officers'; return; }
+  if (!r.data.length) { el.innerHTML = `<p style="color:#9ca3af;text-align:center;">No officers registered yet</p>`; return; }
+  el.innerHTML = r.data.map(o => `
+    <div class="officer-option" onclick="assignOfficer('${o._id}','${o.name}')">
+      <h4>👮 ${o.name} ${o.badgeNumber ? `<span style="font-size:11px;color:#16a34a;">(${o.badgeNumber})</span>` : ''}</h4>
+      <p>${o.zone ? 'Zone: '+o.zone : ''} ${o.phone ? '· 📞 '+o.phone : ''}</p>
+    </div>
+  `).join('');
+}
+
+async function assignOfficer(officerId, officerName) {
+  const r = await api(`/api/donations/${pendingDonationId}/assign-officer`, {
+    method: 'PUT', body: JSON.stringify({ officerId })
+  });
+  if (r?.ok) {
+    toast(`✅ Assigned to ${officerName}!`, 'success');
+    closeModal('officer-modal');
+    loadDashboard(); loadAllDonations();
+  } else toast(r?.data?.message || 'Error assigning', 'error');
+}
+
+// NGO assign modal
+async function openAssignNGO(donationId, itemName) {
+  pendingDonationId = donationId;
+  document.getElementById('assign-ngo-item-name').textContent = 'Item: ' + itemName;
+  document.getElementById('ngo-modal').classList.add('open');
+  const el = document.getElementById('ngos-list-modal');
+  el.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+  const r = await api('/api/users/ngos');
+  if (!r?.ok) { el.innerHTML = 'Failed to load NGOs'; return; }
+  if (!r.data.length) { el.innerHTML = `<p style="color:#9ca3af;text-align:center;">No NGOs registered yet</p>`; return; }
+  el.innerHTML = r.data.map(n => `
+    <div class="officer-option" onclick="assignNGO('${n._id}','${n.organizationName||n.name}')">
+      <h4>🤝 ${n.organizationName || n.name}</h4>
+      <p>${n.address || ''} ${n.phone ? '· 📞 '+n.phone : ''}</p>
+    </div>
+  `).join('');
+}
+
+async function assignNGO(ngoId, ngoName) {
+  const r = await api(`/api/donations/${pendingDonationId}/assign-ngo`, {
+    method: 'PUT', body: JSON.stringify({ ngoId })
+  });
+  if (r?.ok) {
+    toast(`✅ Assigned to ${ngoName}!`, 'success');
+    closeModal('ngo-modal');
+    loadAllDonations();
+  } else toast(r?.data?.message || 'Error', 'error');
+}
+
+async function markPicked(id) {
+  const r = await api(`/api/donations/${id}/mark-picked`, { method: 'PUT' });
+  if (r?.ok) { toast('📦 Marked as picked up!', 'success'); loadAllDonations(); loadDashboard(); }
+  else toast(r?.data?.message || 'Error', 'error');
+}
+
+// Users
+async function loadUsers() {
+  const el = document.getElementById('users-list');
+  el.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+  const r = await api('/api/users');
+  if (!r?.ok) return;
+  allUsers = r.data;
+  renderUsers();
+}
+
+function filterUsers(role, el) {
+  currentUserFilter = role;
+  document.querySelectorAll('#page-users .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderUsers();
+}
+
+function renderUsers() {
+  const el = document.getElementById('users-list');
+  let users = allUsers;
+  if (currentUserFilter !== 'all') users = users.filter(u => u.role === currentUserFilter);
+  if (!users.length) { el.innerHTML = `<div class="empty-state"><div class="es-icon">👤</div><h3>No users found</h3></div>`; return; }
+  const roleEmoji = { donor:'🏠', ngo:'🤝', admin:'👮' };
+  const roleBadge = { donor:'badge-listed', ngo:'badge-distributed', admin:'badge-assigned' };
+  el.innerHTML = `<div class="card">${users.map(u => `
+    <div class="user-row">
+      <div class="user-row-avatar">${(u.name||'?')[0].toUpperCase()}</div>
+      <div class="user-row-info">
+        <h4>${u.name} ${u.badgeNumber ? `<small style="color:#16a34a;">(${u.badgeNumber})</small>` : ''}</h4>
+        <p>${u.email} · ${fmtDate(u.createdAt)}</p>
+        ${u.organizationName ? `<p style="color:#16a34a;font-size:11px;">${u.organizationName}</p>` : ''}
+      </div>
+      <span class="badge ${roleBadge[u.role]}">${roleEmoji[u.role]} ${u.role}</span>
+    </div>
+  `).join('')}</div>`;
+}
+
+// My assignments
+async function loadMyAssignments() {
+  const el = document.getElementById('my-assignments');
+  el.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+  const r = await api('/api/donations/my-assignments');
+  if (!r?.ok) { el.innerHTML = ''; return; }
+  if (!r.data.length) { el.innerHTML = `<div class="empty-state" style="padding:20px 0;"><div class="es-icon">👮</div><h3>No active assignments</h3></div>`; return; }
+  el.innerHTML = r.data.map(d => `
+    <div class="donation-card">
+      <div class="donation-card-top">
+        <div><h4>${CAT_EMOJI[d.category]||'📦'} ${d.itemName}</h4><div class="cat">${d.address}</div></div>
+        ${statusBadge(d.status)}
+      </div>
+      <div class="meta">👤 ${d.donorName} ${d.donorPhone ? '· 📞 '+d.donorPhone : ''}</div>
+      ${d.location?.lat ? `<a href="https://maps.google.com/?q=${d.location.lat},${d.location.lng}" target="_blank" class="btn btn-blue btn-sm" style="margin-top:8px;display:inline-flex;">🗺️ Navigate to Donor</a>` : ''}
+      ${d.status === 'assigned' ? `<button class="btn btn-primary btn-sm" onclick="markPickedProfile('${d._id}')" style="margin-top:8px;">📦 Mark Picked Up</button>` : ''}
+    </div>
+  `).join('');
+}
+
+async function markPickedProfile(id) {
+  const r = await api(`/api/donations/${id}/mark-picked`, { method: 'PUT' });
+  if (r?.ok) { toast('📦 Marked as picked!', 'success'); loadMyAssignments(); }
+  else toast('Error', 'error');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// Close on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+loadDashboard();
+</script>
+</body>
+</html>

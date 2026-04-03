@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta name="theme-color" content="#16a34a"/>
+  <title>Register – ReUse BMC</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon" href="/icon.svg"/>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="app-shell">
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#16a34a,#166534); padding:50px 20px 24px; color:white; display:flex; align-items:center; gap:12px;">
+    <button onclick="history.back()" style="background:rgba(255,255,255,0.2); border:none; color:white; width:38px; height:38px; border-radius:10px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">←</button>
+    <div>
+      <h2 style="font-size:20px; font-weight:700;">Create Account</h2>
+      <p style="font-size:12px; opacity:0.85;">Join the ReUse BMC community</p>
+    </div>
+  </div>
+  <div class="scroll-content" style="padding-bottom:30px;">
+    <div class="card">
+      <div class="form-group">
+        <label>Full Name</label>
+        <div class="input-wrap"><span class="icon">👤</span><input type="text" id="name" placeholder="Your full name"/></div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap"><span class="icon">✉️</span><input type="email" id="email" placeholder="your@email.com"/></div>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <div class="input-wrap"><span class="icon">📞</span><input type="tel" id="phone" placeholder="10-digit mobile number"/></div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap"><span class="icon">🔒</span><input type="password" id="password" placeholder="Min 6 characters"/></div>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <div class="input-wrap"><span class="icon">📍</span><input type="text" id="address" placeholder="Your locality, Mumbai"/></div>
+      </div>
+      <div class="form-group">
+        <label>Register As</label>
+        <div class="role-cards">
+          <div class="role-card selected" data-role="donor" onclick="selectRole('donor')">
+            <div class="rc-icon">🏠</div>
+            <div class="rc-label">Donor</div>
+          </div>
+          <div class="role-card" data-role="ngo" onclick="selectRole('ngo')">
+            <div class="rc-icon">🤝</div>
+            <div class="rc-label">NGO</div>
+          </div>
+          <div class="role-card" data-role="admin" onclick="selectRole('admin')">
+            <div class="rc-icon">🏛️</div>
+            <div class="rc-label">BMC Officer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NGO fields -->
+      <div id="ngo-fields" style="display:none;">
+        <div class="form-group">
+          <label>Organization Name</label>
+          <div class="input-wrap"><span class="icon">🏢</span><input type="text" id="orgName" placeholder="NGO / Organization name"/></div>
+        </div>
+      </div>
+
+      <!-- Officer fields -->
+      <div id="officer-fields" style="display:none;">
+        <div class="form-group">
+          <label>Badge Number</label>
+          <div class="input-wrap"><span class="icon">🪪</span><input type="text" id="badgeNo" placeholder="e.g. BMC001"/></div>
+        </div>
+        <div class="form-group">
+          <label>Zone / Ward</label>
+          <div class="input-wrap"><span class="icon">🗺️</span><input type="text" id="zone" placeholder="e.g. Andheri West"/></div>
+        </div>
+      </div>
+
+      <div id="err-msg" style="color:#ef4444; font-size:13px; margin-bottom:12px; display:none;"></div>
+      <button class="btn btn-primary" onclick="doRegister()" id="reg-btn">Create Account ✨</button>
+      <p style="text-align:center; margin-top:14px; font-size:13px; color:#6b7280;">
+        Already have account? <a href="/login" style="color:#16a34a; font-weight:600;">Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+<script src="/app.js"></script>
+<script>
+  let selectedRole = 'donor';
+  function selectRole(role) {
+    selectedRole = role;
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-role="${role}"]`).classList.add('selected');
+    document.getElementById('ngo-fields').style.display = role === 'ngo' ? 'block' : 'none';
+    document.getElementById('officer-fields').style.display = role === 'admin' ? 'block' : 'none';
+  }
+  async function doRegister() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('password').value;
+    const address = document.getElementById('address').value.trim();
+    if (!name || !email || !phone || !password || !address) { showErr('Please fill all required fields'); return; }
+    if (password.length < 6) { showErr('Password must be at least 6 characters'); return; }
+    const body = { name, email, phone, password, address, role: selectedRole };
+    if (selectedRole === 'ngo') body.organizationName = document.getElementById('orgName').value.trim();
+    if (selectedRole === 'admin') { body.badgeNumber = document.getElementById('badgeNo').value.trim(); body.zone = document.getElementById('zone').value.trim(); }
+    const btn = document.getElementById('reg-btn');
+    btn.textContent = 'Creating account...'; btn.disabled = true;
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) { showErr(data.message); return; }
+      toast('Account created! Please login.', 'success');
+      setTimeout(() => window.location.href = '/login', 1200);
+    } catch(e) { showErr('Server error. Please try again.'); }
+    finally { btn.textContent = 'Create Account ✨'; btn.disabled = false; }
+  }
+  function showErr(msg) {
+    const el = document.getElementById('err-msg');
+    el.textContent = msg; el.style.display = 'block';
+  }
+</script>
+</body>
+</html>

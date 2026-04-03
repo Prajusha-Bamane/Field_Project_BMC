@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta name="theme-color" content="#16a34a"/>
+  <title>Donor – ReUse BMC</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon" href="/icon.svg"/>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="app-shell">
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="header">
+      <div class="header-row">
+        <div>
+          <p style="font-size:12px; opacity:0.8;">Good day,</p>
+          <h2 id="donor-name">Donor 👋</h2>
+          <p>BMC Donation Platform</p>
+        </div>
+        <button class="header-icon-btn" onclick="showPage('page-profile')">👤</button>
+      </div>
+    </div>
+    <div class="scroll-content" style="margin-top:20px;">
+      <!-- Stats -->
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num" id="s-total">-</div><div class="stat-label">Donations</div></div>
+        <div class="stat-card"><div class="stat-icon">🚗</div><div class="stat-num" id="s-picked">-</div><div class="stat-label">Picked Up</div></div>
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="s-points">-</div><div class="stat-label">Points</div></div>
+      </div>
+      <!-- Donate CTA -->
+      <div class="action-card" onclick="showPage('page-donate')">
+        <div>
+          <h3>♻️ Donate an Item</h3>
+          <p>Give your unused items a new life</p>
+        </div>
+        <div class="ac-arrow">→</div>
+      </div>
+      <!-- Recent donations -->
+      <div class="section-heading">My Donations <a href="#" onclick="showPage('page-history')">See all</a></div>
+      <div id="recent-list"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- DONATE PAGE -->
+  <div class="page" id="page-donate">
+    <div style="background:linear-gradient(135deg,#16a34a,#166534); padding:50px 16px 20px; color:white; display:flex; align-items:center; gap:10px;">
+      <button onclick="showPage('page-home')" style="background:rgba(255,255,255,0.2); border:none; color:white; width:36px; height:36px; border-radius:10px; font-size:18px; cursor:pointer;">←</button>
+      <div><h2 style="font-size:18px; font-weight:700;">Donate Item</h2><p style="font-size:12px; opacity:0.85;">List your unused item for pickup</p></div>
+    </div>
+    <div class="scroll-content">
+      <div class="card">
+        <div class="form-group">
+          <label>Category</label>
+          <div class="cat-chips" id="cat-chips">
+            <button class="cat-chip selected" data-cat="clothes" onclick="selCat('clothes')"><span class="chip-icon">👕</span><span class="chip-label">Clothes</span></button>
+            <button class="cat-chip" data-cat="books" onclick="selCat('books')"><span class="chip-icon">📚</span><span class="chip-label">Books</span></button>
+            <button class="cat-chip" data-cat="utensils" onclick="selCat('utensils')"><span class="chip-icon">🍽️</span><span class="chip-label">Utensils</span></button>
+            <button class="cat-chip" data-cat="toys" onclick="selCat('toys')"><span class="chip-icon">🧸</span><span class="chip-label">Toys</span></button>
+            <button class="cat-chip" data-cat="appliances" onclick="selCat('appliances')"><span class="chip-icon">📱</span><span class="chip-label">Appliances</span></button>
+            <button class="cat-chip" data-cat="other" onclick="selCat('other')"><span class="chip-icon">📦</span><span class="chip-label">Other</span></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Item Name</label>
+          <div class="input-wrap"><span class="icon">📝</span><input type="text" id="d-item" placeholder="e.g. School Uniform, Steel Utensils"/></div>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <div class="input-wrap"><span class="icon">🔢</span><input type="number" id="d-qty" value="1" min="1"/></div>
+        </div>
+        <div class="form-group">
+          <label>Condition</label>
+          <div class="condition-group">
+            <button class="cond-btn selected" data-cond="good" onclick="selCond('good')">✅ Good</button>
+            <button class="cond-btn" data-cond="used" onclick="selCond('used')">🔄 Used</button>
+            <button class="cond-btn" data-cond="worn" onclick="selCond('worn')">⚠️ Worn</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="d-desc" rows="3" placeholder="Brief description of the item..." style="border:2px solid #e5e7eb; border-radius:10px; padding:12px; width:100%; font-family:Poppins,sans-serif; font-size:14px; outline:none; resize:none;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Item Photos (up to 5)</label>
+          <div class="photo-upload-area" onclick="document.getElementById('d-photos').click()">
+            <input type="file" id="d-photos" accept="image/*" multiple onchange="previewPhotos(this)"/>
+            <div style="font-size:32px; margin-bottom:6px;">📷</div>
+            <p style="font-size:13px; color:#9ca3af; font-weight:500;">Tap to add photos</p>
+          </div>
+          <div class="photo-preview" id="photo-preview"></div>
+        </div>
+        <div class="form-group">
+          <label>Pickup Address</label>
+          <div class="input-wrap"><span class="icon">📍</span><input type="text" id="d-addr" placeholder="Full pickup address in Mumbai"/></div>
+        </div>
+        <div class="form-group">
+          <label>Share Location (for easy pickup)</label>
+          <div id="loc-status" class="loc-banner">
+            📍 <span id="loc-text">Tap below to share your live location</span>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="getLocation()" id="loc-btn">📡 Get My Location</button>
+          <input type="hidden" id="d-lat"/>
+          <input type="hidden" id="d-lng"/>
+        </div>
+        <div id="map-preview" style="display:none; margin-top:10px; border-radius:12px; overflow:hidden; height:160px;"></div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Preferred Pickup Date</label>
+          <div class="input-wrap"><span class="icon">📅</span><input type="date" id="d-date" class=""/></div>
+        </div>
+        <button class="btn btn-primary" onclick="submitDonation()" id="submit-btn" style="margin-top:8px;">Submit Donation ♻️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page" id="page-history">
+    <div class="header">
+      <div class="header-row">
+        <div><h2>My Donations 📋</h2><p>All your donation listings</p></div>
+      </div>
+    </div>
+    <div class="scroll-content" style="margin-top:20px;">
+      <div id="history-list"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="page-profile">
+    <div class="header">
+      <div class="header-row">
+        <div><h2>My Profile 👤</h2><p>Your account details</p></div>
+      </div>
+    </div>
+    <div class="scroll-content" style="margin-top:20px;">
+      <div class="card" style="text-align:center;">
+        <div class="avatar" id="profile-avatar">?</div>
+        <h3 id="profile-name" style="font-size:18px; font-weight:700;"></h3>
+        <p id="profile-email" style="font-size:13px; color:#6b7280; margin:4px 0;"></p>
+        <span class="badge badge-distributed" style="margin-top:4px;">🏠 Donor</span>
+      </div>
+      <div class="card">
+        <div class="section-heading" style="margin-bottom:10px;">Contact Info</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#4b5563;"><span style="font-size:20px;">📞</span><span id="profile-phone">-</span></div>
+          <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#4b5563;"><span style="font-size:20px;">📍</span><span id="profile-address">-</span></div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num" id="p-total">-</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num" id="p-dist">-</div><div class="stat-label">Distributed</div></div>
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="p-pts">-</div><div class="stat-label">Points</div></div>
+      </div>
+      <button class="btn btn-danger" onclick="logout()" style="width:100%; margin-top:10px;">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="showPage('page-home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+    <button class="nav-item" id="nav-donate" onclick="showPage('page-donate')"><span class="nav-icon">➕</span><span class="nav-label">Donate</span></button>
+    <button class="nav-item" id="nav-history" onclick="showPage('page-history')"><span class="nav-icon">📋</span><span class="nav-label">History</span></button>
+    <button class="nav-item" id="nav-profile" onclick="showPage('page-profile')"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></button>
+  </nav>
+</div>
+
+<script src="/app.js"></script>
+<script>
+if (!requireAuth('donor')) {}
+
+const user = getUser();
+document.getElementById('donor-name').textContent = (user?.name?.split(' ')[0] || 'Donor') + ' 👋';
+document.getElementById('profile-name').textContent = user?.name || '';
+document.getElementById('profile-email').textContent = user?.email || '';
+document.getElementById('profile-phone').textContent = user?.phone || 'Not set';
+document.getElementById('profile-address').textContent = user?.address || 'Not set';
+document.getElementById('profile-avatar').textContent = (user?.name||'D')[0].toUpperCase();
+
+let selectedCat = 'clothes', selectedCond = 'good';
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const map = { 'page-home':'nav-home','page-donate':'nav-donate','page-history':'nav-history','page-profile':'nav-profile' };
+  if (map[id]) document.getElementById(map[id]).classList.add('active');
+  if (id === 'page-home') loadHome();
+  if (id === 'page-history') loadHistory();
+  if (id === 'page-profile') loadProfile();
+}
+
+function selCat(cat) {
+  selectedCat = cat;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`[data-cat="${cat}"]`).classList.add('selected');
+}
+function selCond(c) {
+  selectedCond = c;
+  document.querySelectorAll('.cond-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`[data-cond="${c}"]`).classList.add('selected');
+}
+
+function previewPhotos(input) {
+  const preview = document.getElementById('photo-preview');
+  preview.innerHTML = '';
+  [...input.files].slice(0,5).forEach(f => {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(f);
+    preview.appendChild(img);
+  });
+}
+
+function getLocation() {
+  const btn = document.getElementById('loc-btn');
+  btn.textContent = '⏳ Getting location...'; btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude: lat, longitude: lng } = pos.coords;
+    document.getElementById('d-lat').value = lat;
+    document.getElementById('d-lng').value = lng;
+    document.getElementById('loc-text').textContent = `✅ Location captured: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    document.getElementById('map-preview').style.display = 'block';
+    document.getElementById('map-preview').innerHTML = `<iframe class="map-frame" src="https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed" allowfullscreen></iframe>`;
+    btn.textContent = '✅ Location Shared'; btn.disabled = false;
+    toast('Location captured successfully!', 'success');
+  }, () => {
+    document.getElementById('loc-text').textContent = '⚠️ Location access denied. Enter address manually.';
+    btn.textContent = '📡 Retry Location'; btn.disabled = false;
+    toast('Could not get location. Please enter address manually.', 'info');
+  });
+}
+
+async function submitDonation() {
+  const itemName = document.getElementById('d-item').value.trim();
+  const address = document.getElementById('d-addr').value.trim();
+  if (!itemName || !address) { toast('Please fill item name and address', 'error'); return; }
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Submitting...'; btn.disabled = true;
+  try {
+    const fd = new FormData();
+    fd.append('itemName', itemName);
+    fd.append('category', selectedCat);
+    fd.append('condition', selectedCond);
+    fd.append('description', document.getElementById('d-desc').value);
+    fd.append('quantity', document.getElementById('d-qty').value || 1);
+    fd.append('address', address);
+    fd.append('pickupDate', document.getElementById('d-date').value);
+    fd.append('lat', document.getElementById('d-lat').value);
+    fd.append('lng', document.getElementById('d-lng').value);
+    const photos = document.getElementById('d-photos').files;
+    [...photos].forEach(f => fd.append('photos', f));
+    const res = await fetch('/api/donations', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.message, 'error'); return; }
+    toast('🎉 Donation listed successfully! BMC will assign an officer.', 'success');
+    // Reset form
+    document.getElementById('d-item').value = ''; document.getElementById('d-desc').value = '';
+    document.getElementById('d-addr').value = ''; document.getElementById('d-date').value = '';
+    document.getElementById('d-lat').value = ''; document.getElementById('d-lng').value = '';
+    document.getElementById('photo-preview').innerHTML = '';
+    document.getElementById('d-photos').value = '';
+    document.getElementById('map-preview').style.display = 'none';
+    document.getElementById('loc-text').textContent = 'Tap below to share your live location';
+    // Update user points locally
+    const u = getUser(); if (u) { u.points = (u.points||0) + 10; localStorage.setItem('user', JSON.stringify(u)); }
+    setTimeout(() => showPage('page-home'), 800);
+  } catch(e) { toast('Error submitting. Please try again.', 'error'); }
+  finally { btn.textContent = 'Submit Donation ♻️'; btn.disabled = false; }
+}
+
+async function loadHome() {
+  try {
+    const r = await api('/api/users/stats');
+    if (r?.ok) {
+      document.getElementById('s-total').textContent = r.data.total || 0;
+      document.getElementById('s-picked').textContent = r.data.picked || 0;
+      document.getElementById('s-points').textContent = r.data.points || 0;
+    }
+    const rd = await api('/api/donations');
+    if (rd?.ok) {
+      const list = rd.data.slice(0,5);
+      const el = document.getElementById('recent-list');
+      if (!list.length) { el.innerHTML = `<div class="empty-state"><div class="es-icon">📦</div><h3>No donations yet</h3><p>Tap "Donate an Item" to get started!</p></div>`; return; }
+      el.innerHTML = list.map(d => donationCard(d)).join('');
+    }
+  } catch(e) {}
+}
+
+async function loadHistory() {
+  const el = document.getElementById('history-list');
+  el.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+  const r = await api('/api/donations');
+  if (!r?.ok) { el.innerHTML = `<div class="empty-state"><div class="es-icon">❌</div><h3>Failed to load</h3></div>`; return; }
+  if (!r.data.length) { el.innerHTML = `<div class="empty-state"><div class="es-icon">📭</div><h3>No donations yet</h3><p>Start donating to see history here</p></div>`; return; }
+  el.innerHTML = r.data.map(d => donationCard(d, true)).join('');
+}
+
+async function loadProfile() {
+  const r = await api('/api/users/stats');
+  if (r?.ok) {
+    document.getElementById('p-total').textContent = r.data.total || 0;
+    document.getElementById('p-dist').textContent = r.data.distributed || 0;
+    document.getElementById('p-pts').textContent = r.data.points || 0;
+  }
+}
+
+function donationCard(d, showDelete = false) {
+  return `<div class="donation-card">
+    <div class="donation-card-top">
+      <div>
+        <h4>${CAT_EMOJI[d.category]||'📦'} ${d.itemName}</h4>
+        <div class="cat">${d.category} · Qty: ${d.quantity||1} · ${COND_LABEL[d.condition]||d.condition}</div>
+      </div>
+      ${statusBadge(d.status)}
+    </div>
+    ${d.photos?.length ? `<div style="display:flex;gap:6px;margin:8px 0;">${d.photos.slice(0,3).map(p=>`<img src="${p}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">`).join('')}</div>` : ''}
+    <div class="meta">📍 ${d.address}</div>
+    <div class="meta">📅 Listed: ${fmtDate(d.createdAt)}</div>
+    ${d.officerName ? `<div class="meta">👮 Officer: ${d.officerName}</div>` : ''}
+    ${d.ngoName ? `<div class="meta">🤝 NGO: ${d.ngoName}</div>` : ''}
+    ${d.location?.lat ? `<div class="meta" style="margin-top:6px;"><a href="https://maps.google.com/?q=${d.location.lat},${d.location.lng}" target="_blank" style="color:#16a34a;font-weight:600;font-size:12px;">🗺️ View on Map</a></div>` : ''}
+    ${showDelete && d.status === 'listed' ? `<div class="actions"><button class="btn btn-danger btn-sm" onclick="deleteDonation('${d._id}')">🗑️ Cancel</button></div>` : ''}
+  </div>`;
+}
+
+async function deleteDonation(id) {
+  if (!confirm('Cancel this donation?')) return;
+  const r = await api(`/api/donations/${id}`, { method: 'DELETE' });
+  if (r?.ok) { toast('Donation cancelled', 'info'); loadHistory(); }
+  else toast(r?.data?.message || 'Error', 'error');
+}
+
+loadHome();
+</script>
+</body>
+</html>
