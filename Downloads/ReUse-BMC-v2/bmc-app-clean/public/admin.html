@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BMC Authority Dashboard – ReUse BMC</title>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  .priority-ngo-row { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; background: white; cursor: pointer; transition: all 0.2s; }
+  .priority-ngo-row:hover { border-color: var(--green); background: var(--green-light); }
+  .priority-ngo-row.selected { border-color: var(--green); background: var(--green-light); }
+  .priority-score { font-size: 1.4rem; font-weight: 800; color: var(--green); min-width: 40px; text-align: center; }
+  .ngo-verify-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .money-cat { border: 2px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .money-cat.selected { border-color: var(--green); background: var(--green-light); }
+  .recycle-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-brand"><span class="icon">🏛️</span> BMC Authority Panel</div>
+  <div class="nav-right">
+    <div class="nav-user">Officer: <strong id="navName">—</strong></div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-label">Operations</div>
+    <button class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')"><span class="icon">🏠</span> Dashboard</button>
+    <button class="nav-item" data-page="pending" onclick="navigateTo('pending');loadPending()"><span class="icon">📋</span> Pending Donations</button>
+    <button class="nav-item" data-page="my-pickups" onclick="navigateTo('my-pickups');loadMyPickups()"><span class="icon">🚗</span> My Pickups</button>
+    <button class="nav-item" data-page="ngo-requests" onclick="navigateTo('ngo-requests');loadNGORequests()"><span class="icon">📥</span> NGO Requests</button>
+    <button class="nav-item" data-page="all-donations" onclick="navigateTo('all-donations');loadAllDonations()"><span class="icon">📦</span> All Donations</button>
+    <div class="sidebar-label">NGO Management</div>
+    <button class="nav-item" data-page="verify-ngo" onclick="navigateTo('verify-ngo');loadPendingNGOs()"><span class="icon">🔍</span> Verify NGOs <span id="pendingNGOBadge" style="background:#ef4444;color:white;border-radius:10px;padding:1px 7px;font-size:0.7rem;margin-left:auto"></span></button>
+    <button class="nav-item" data-page="ngo-list" onclick="navigateTo('ngo-list');loadAllNGOs()"><span class="icon">🏢</span> All NGOs</button>
+    <div class="sidebar-label">Finance</div>
+    <button class="nav-item" data-page="recycle" onclick="navigateTo('recycle');loadRecyclable()"><span class="icon">♻️</span> Recycle Items</button>
+    <button class="nav-item" data-page="money" onclick="navigateTo('money');loadMoneyPage()"><span class="icon">💰</span> Money Distribution</button>
+    <div class="sidebar-label">Reports</div>
+    <button class="nav-item" onclick="window.open('/public-dashboard','_blank')"><span class="icon">🌐</span> Public Dashboard</button>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-header"><div><h2>BMC Authority Dashboard</h2><p>Overview of all donation operations</p></div></div>
+      <div class="stats-grid">
+        <div class="stat-card blue"><div class="num" id="s-listed">—</div><div class="lbl">Pending</div></div>
+        <div class="stat-card yellow"><div class="num" id="s-assigned">—</div><div class="lbl">Assigned</div></div>
+        <div class="stat-card orange"><div class="num" id="s-picked">—</div><div class="lbl">Picked Up</div></div>
+        <div class="stat-card purple"><div class="num" id="s-submitted">—</div><div class="lbl">Submitted</div></div>
+        <div class="stat-card green"><div class="num" id="s-distributed">—</div><div class="lbl">Distributed</div></div>
+        <div class="stat-card" style="--num-color:#be185d"><div class="num" style="color:#be185d" id="s-recycled">—</div><div class="lbl">Recycled</div></div>
+        <div class="stat-card orange"><div class="num" id="s-pendingNgos">—</div><div class="lbl">NGOs Pending Verify</div></div>
+        <div class="stat-card green"><div class="num" id="s-donors">—</div><div class="lbl">Total Donors</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-header"><h3>📋 Pending Actions</h3></div>
+          <div class="card-body">
+            <div class="list-item" style="cursor:pointer" onclick="navigateTo('pending');loadPending()">
+              <div class="item-title">🔔 Donations awaiting officer assignment</div>
+              <div style="font-size:0.8rem;color:var(--gray);margin-top:4px">Click to manage →</div>
+            </div>
+            <div class="list-item" style="cursor:pointer" onclick="navigateTo('ngo-requests');loadNGORequests()">
+              <div class="item-title">🤝 NGO requests awaiting assignment</div>
+              <div style="font-size:0.8rem;color:var(--gray);margin-top:4px">Click to assign NGO →</div>
+            </div>
+            <div class="list-item" style="cursor:pointer" onclick="navigateTo('verify-ngo');loadPendingNGOs()">
+              <div class="item-title">🔍 NGOs pending verification</div>
+              <div style="font-size:0.8rem;color:var(--gray);margin-top:4px">Click to verify →</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>💰 Recycle Summary</h3></div>
+          <div class="card-body" id="recycleSummary">
+            <div style="padding:20px;text-align:center;color:var(--gray)">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENDING DONATIONS -->
+    <div class="page" id="page-pending">
+      <div class="section-header"><div><h2>📋 Pending Donations</h2><p>Assign BMC officers to these items</p></div></div>
+      <div class="card"><div class="card-body" id="pendingList"><div class="empty-state"><div class="icon">⏳</div><h4>Loading...</h4></div></div></div>
+    </div>
+
+    <!-- MY PICKUPS -->
+    <div class="page" id="page-my-pickups">
+      <div class="section-header"><div><h2>🚗 My Pickup Assignments</h2><p>Items assigned to you for collection</p></div></div>
+      <div class="card"><div class="card-body" id="pickupList"></div></div>
+    </div>
+
+    <!-- NGO REQUESTS -->
+    <div class="page" id="page-ngo-requests">
+      <div class="section-header">
+        <div><h2>📥 NGO Requests</h2><p>Items with NGO requests — assign based on priority score</p></div>
+      </div>
+      <div class="alert alert-info">ℹ️ Priority is auto-ranked. Higher score = better distribution history. For unassigned leftover slots, cycle to the next NGO.</div>
+      <div id="ngoRequestList"></div>
+    </div>
+
+    <!-- ALL DONATIONS -->
+    <div class="page" id="page-all-donations">
+      <div class="section-header">
+        <div><h2>📦 All Donations</h2></div>
+        <select id="statusFilter" onchange="loadAllDonations()" style="padding:8px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.875rem">
+          <option value="">All Statuses</option>
+          <option value="listed">Listed</option>
+          <option value="assigned">Assigned</option>
+          <option value="picked">Picked</option>
+          <option value="submitted">Submitted</option>
+          <option value="received">Received</option>
+          <option value="distributed">Distributed</option>
+          <option value="recycled">Recycled</option>
+        </select>
+      </div>
+      <div class="card"><div class="card-body" id="allDonationsList"></div></div>
+    </div>
+
+    <!-- VERIFY NGOS -->
+    <div class="page" id="page-verify-ngo">
+      <div class="section-header"><div><h2>🔍 Verify NGOs</h2><p>Review and approve/reject NGO registrations</p></div></div>
+      <div id="pendingNGOList"><div class="empty-state"><div class="icon">⏳</div><h4>Loading...</h4></div></div>
+    </div>
+
+    <!-- ALL NGOS -->
+    <div class="page" id="page-ngo-list">
+      <div class="section-header"><div><h2>🏢 All NGOs</h2><p>All registered organizations</p></div></div>
+      <div id="allNGOList"></div>
+    </div>
+
+    <!-- RECYCLE ITEMS -->
+    <div class="page" id="page-recycle">
+      <div class="section-header"><div><h2>♻️ Recycle Items</h2><p>Mark leftover donated items for recycling</p></div></div>
+      <div class="alert alert-warning">⚠️ Only recycle items that are distributed but have leftover portions, or items that cannot be used by any NGO. Enter an estimated recycle value (₹).</div>
+      <div class="card"><div class="card-body" id="recyclableList"></div></div>
+    </div>
+
+    <!-- MONEY DISTRIBUTION -->
+    <div class="page" id="page-money">
+      <div class="section-header"><div><h2>💰 Money Distribution</h2><p>Record how recycle money is used</p></div></div>
+      <div class="form-card">
+        <h3>Add Distribution Record</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Total Recycle Amount (₹) *</label><input id="m-amount" type="number" min="1" placeholder="e.g. 5000"/></div>
+          <div class="form-group"><label>Note</label><input id="m-note" type="text" placeholder="e.g. Q1 2024 recycling proceeds"/></div>
+        </div>
+        <div id="distRows">
+          <div class="money-cat" id="dr-0">
+            <div class="form-grid">
+              <div class="form-group"><label>Category</label>
+                <select class="dr-cat">
+                  <option value="student_education">🎓 Student Education</option>
+                  <option value="poor_food">🍱 Food for Poor</option>
+                  <option value="medical_aid">💊 Medical Aid</option>
+                  <option value="infrastructure">🏗️ Infrastructure</option>
+                  <option value="other">📦 Other</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Label</label><input class="dr-label" type="text" placeholder="e.g. Books for slum children"/></div>
+              <div class="form-group"><label>Amount (₹)</label><input class="dr-amt" type="number" min="0" placeholder="0"/></div>
+              <div class="form-group"><label>Beneficiaries</label><input class="dr-ben" type="number" min="0" placeholder="0"/></div>
+              <div class="form-group form-full"><label>Description</label><input class="dr-desc" type="text" placeholder="Details about distribution"/></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-ghost" onclick="addDistRow()">+ Add Another Category</button>
+          <button class="btn btn-primary" onclick="submitMoneyDist()">💾 Save Distribution Record</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📜 Past Distributions</h3></div>
+        <div class="card-body" id="pastDistributions"><div style="padding:20px;text-align:center;color:var(--gray)">Loading...</div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ASSIGN OFFICER MODAL -->
+<div class="modal-overlay" id="assignModal" style="display:none">
+  <div class="modal">
+    <h3>👮 Assign BMC Officer</h3>
+    <input type="hidden" id="assignDonationId"/>
+    <div class="form-group"><label>Select Officer</label>
+      <select id="officerSelect"><option value="">Loading...</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('assignModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="assignOfficer()">Assign Officer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ASSIGN NGO MODAL -->
+<div class="modal-overlay" id="ngoModal" style="display:none">
+  <div class="modal">
+    <h3>🏢 Assign NGO (Priority-Based)</h3>
+    <input type="hidden" id="ngoModalDonationId"/>
+    <div style="font-size:0.875rem;color:var(--gray);margin-bottom:14px">NGOs sorted by priority score. Top = best distribution history.</div>
+    <div id="priorityNGOList"><div style="text-align:center;color:var(--gray)">Loading...</div></div>
+    <input type="hidden" id="selectedNGOId"/>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('ngoModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAssignNGO()">Assign Selected NGO</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECYCLE MODAL -->
+<div class="modal-overlay" id="recycleModal" style="display:none">
+  <div class="modal">
+    <h3>♻️ Mark as Recycled</h3>
+    <input type="hidden" id="recycleDonationId"/>
+    <div class="form-group"><label>Estimated Recycle Value (₹)</label><input id="r-value" type="number" min="0" placeholder="e.g. 200"/></div>
+    <div class="form-group"><label>Notes</label><textarea id="r-note" placeholder="Why is this being recycled? Quantity left over?"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('recycleModal')">Cancel</button>
+      <button class="btn btn-orange" onclick="confirmRecycle()">♻️ Mark as Recycled</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT TO NGO MODAL -->
+<div class="modal-overlay" id="submitModal" style="display:none">
+  <div class="modal">
+    <h3>📤 Mark as Submitted to NGO</h3>
+    <input type="hidden" id="submitDonationId"/>
+    <p style="margin-bottom:16px;font-size:0.9rem;color:var(--gray)">This confirms the item has been handed over to the assigned NGO physically.</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('submitModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSubmit()">✅ Confirm Submission</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+const user = requireAuth('admin');
+if (user) { document.getElementById('navName').textContent = user.name; loadDashboard(); }
+
+async function loadDashboard() {
+  const [stats] = await Promise.all([API.get('/api/users/stats')]);
+  document.getElementById('s-listed').textContent = stats.listed || 0;
+  document.getElementById('s-assigned').textContent = stats.assigned || 0;
+  document.getElementById('s-picked').textContent = stats.picked || 0;
+  document.getElementById('s-submitted').textContent = stats.submitted || 0;
+  document.getElementById('s-distributed').textContent = stats.distributed || 0;
+  document.getElementById('s-recycled').textContent = stats.recycled || 0;
+  document.getElementById('s-pendingNgos').textContent = stats.pendingNgos || 0;
+  document.getElementById('s-donors').textContent = stats.donors || 0;
+  if (stats.pendingNgos > 0) document.getElementById('pendingNGOBadge').textContent = stats.pendingNgos;
+
+  // Recycle summary
+  document.getElementById('recycleSummary').innerHTML = `
+    <div class="list-item"><div class="item-title">♻️ Items Recycled: ${stats.recycled || 0}</div></div>
+    <div class="list-item"><div class="item-title">💰 Total Recycle Value: ₹${stats.totalRecycleValue || 0}</div></div>
+    <div class="list-item" style="cursor:pointer" onclick="navigateTo('money');loadMoneyPage()"><div class="item-title">📊 View/Record Distribution →</div></div>`;
+}
+
+async function loadPending() {
+  const el = document.getElementById('pendingList');
+  const [donations, officers] = await Promise.all([API.get('/api/donations/pending'), API.get('/api/users/officers')]);
+  window._officers = officers;
+  if (!donations.length) { el.innerHTML = '<div class="empty-state"><div class="icon">✅</div><h4>No pending donations!</h4><p>All donations have been assigned.</p></div>'; return; }
+  el.innerHTML = donations.map(d => `
+    <div class="list-item">
+      <div class="item-header">
+        <div>
+          <div class="item-title">${d.itemName}</div>
+          <div class="item-meta"><span>👤 ${d.donorName}</span><span>📞 ${d.donorPhone||'—'}</span><span>📂 ${d.category}</span><span>🔢 ${d.quantity}</span><span>📅 ${formatDate(d.createdAt)}</span></div>
+          <div style="font-size:0.8rem;color:var(--gray);margin-top:4px">📍 ${d.address}</div>
+          ${d.location && d.location.lat ? `<a href="https://maps.google.com/?q=${d.location.lat},${d.location.lng}" target="_blank" style="font-size:0.8rem;color:var(--blue)">🗺️ View on Map</a>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${statusBadge(d.status)}
+          <button class="btn btn-primary btn-sm" onclick="openAssignModal('${d._id}')">Assign Officer</button>
+        </div>
+      </div>
+      ${d.photos && d.photos.length ? `<div class="photo-grid">${d.photos.map(p=>`<img src="${p}" class="photo-thumb" onclick="window.open('${p}','_blank')"/>`).join('')}</div>` : ''}
+    </div>`).join('');
+}
+
+async function loadMyPickups() {
+  const el = document.getElementById('pickupList');
+  const data = await API.get('/api/donations/my-assignments');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="icon">🚗</div><h4>No pickups assigned to you</h4></div>'; return; }
+  el.innerHTML = data.map(d => `
+    <div class="list-item">
+      <div class="item-header">
+        <div>
+          <div class="item-title">${d.itemName}</div>
+          <div class="item-meta"><span>👤 ${d.donorName}</span><span>📞 ${d.donorPhone||'—'}</span><span>📍 ${d.address}</span></div>
+          ${d.pickupDate ? `<div style="font-size:0.8rem;color:var(--green);margin-top:3px">📅 Pickup: ${formatDate(d.pickupDate)}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+          ${statusBadge(d.status)}
+          ${d.status === 'assigned' ? `<button class="btn btn-primary btn-sm" onclick="markPicked('${d._id}')">✅ Mark Picked</button>` : ''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadNGORequests() {
+  const el = document.getElementById('ngoRequestList');
+  const data = await API.get('/api/donations/ngo-requests');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="icon">📥</div><h4>No NGO requests at the moment</h4><p>NGOs can request items once they are picked up.</p></div>'; return; }
+  el.innerHTML = data.map(d => {
+    const reqCount = d.ngoRequests ? d.ngoRequests.length : 0;
+    const ngoRows = (d.ngoDetails || []).map((n, i) => `
+      <div class="priority-ngo-row ${i === 0 ? 'selected' : ''}" onclick="selectNGO(this,'${n._id}')">
+        <div class="priority-score">${n.priorityScore || 0}</div>
+        <div style="flex:1">
+          <div style="font-weight:700">${n.organizationName || n.name}</div>
+          <div style="font-size:0.8rem;color:var(--gray)">${n.totalReceived||0} received · ${n.totalDistributed||0} distributed</div>
+          <div class="priority-bar" style="width:120px;margin-top:4px"><div class="priority-fill" style="width:${n.priorityScore||0}%"></div></div>
+        </div>
+        ${n.isVerified ? '<span class="badge badge-verified">✓ Verified</span>' : '<span class="badge badge-pending">⏳ Unverified</span>'}
+        <input type="radio" name="ngo_${d._id}" value="${n._id}" ${i===0?'checked':''} style="width:18px;height:18px"/>
+      </div>`).join('');
+    return `
+      <div class="form-card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+          <div>
+            <div style="font-weight:800;font-size:1.05rem">${d.itemName}</div>
+            <div class="item-meta" style="margin-top:4px"><span>📂 ${d.category}</span><span>🔢 ${d.quantity}</span><span>👤 ${d.donorName}</span></div>
+            <div style="margin-top:6px;font-size:0.8rem;background:var(--yellow-light);color:var(--yellow);padding:3px 10px;border-radius:8px;display:inline-block">
+              ${reqCount} NGO${reqCount!==1?'s':''} requested this item
+            </div>
+          </div>
+          ${statusBadge(d.status)}
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;color:#374151">Requesting NGOs (ranked by priority):</div>
+          ${ngoRows || '<div style="color:var(--gray);font-size:0.875rem">No verified NGOs requested this item yet</div>'}
+        </div>
+        ${d.ngoRequests && d.ngoRequests.length ? `
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="openNGOModal('${d._id}','${JSON.stringify(d.ngoDetails||[]).replace(/'/g,"&#39;")}')">🎯 Assign Best NGO</button>
+            <button class="btn btn-orange" onclick="openSubmitModal('${d._id}')">📤 Mark Submitted</button>
+          </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+async function loadAllDonations() {
+  const el = document.getElementById('allDonationsList');
+  const status = document.getElementById('statusFilter').value;
+  const data = await API.get('/api/donations' + (status ? '?status='+status : ''));
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="icon">📦</div><h4>No donations found</h4></div>'; return; }
+  el.innerHTML = data.map(d => `
+    <div class="list-item">
+      <div class="item-header">
+        <div>
+          <div class="item-title">${d.itemName}</div>
+          <div class="item-meta">
+            <span>👤 ${d.donorName}</span><span>📂 ${d.category}</span><span>🔢 ${d.quantity}</span>
+            <span>📅 ${formatDate(d.createdAt)}</span>
+            ${d.officerName ? `<span>👮 ${d.officerName}</span>` : ''}
+            ${d.ngoName ? `<span>🏢 ${d.ngoName}</span>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+          ${statusBadge(d.status)}
+          ${['picked','received','distributed'].includes(d.status) && !d.isRecycled
+            ? `<button class="btn btn-sm" style="background:#fce7f3;color:#be185d" onclick="openRecycleModal('${d._id}')">♻️ Recycle</button>` : ''}
+          ${d.status === 'picked' && d.ngoId ? `<button class="btn btn-primary btn-sm" onclick="openSubmitModal('${d._id}')">📤 Submit</button>` : ''}
+        </div>
+      </div>
+      ${d.isRecycled ? `<span class="badge" style="background:#fce7f3;color:#be185d">♻️ Recycled · ₹${d.recycleValue||0}</span>` : ''}
+    </div>`).join('');
+}
+
+async function loadPendingNGOs() {
+  const el = document.getElementById('pendingNGOList');
+  const data = await API.get('/api/users/ngos/pending');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="icon">✅</div><h4>No NGOs pending verification</h4></div>'; return; }
+  el.innerHTML = data.map(n => `
+    <div class="ngo-verify-card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-size:1.1rem;font-weight:800">${n.organizationName}</div>
+          <div class="item-meta" style="margin-top:4px">
+            <span>👤 ${n.name}</span><span>📞 ${n.phone||'—'}</span>
+            <span>📂 ${n.ngoCategory||'general'}</span>
+          </div>
+        </div>
+        <span class="badge badge-pending">⏳ Pending Review</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:0.875rem;margin-bottom:12px">
+        <div><strong>Registration No:</strong> ${n.registrationNumber||'—'}</div>
+        <div><strong>Address:</strong> ${n.address||'—'}</div>
+        ${n.website ? `<div><strong>Website:</strong> <a href="${n.website}" target="_blank" style="color:var(--blue)">${n.website}</a></div>` : ''}
+        <div><strong>Registered:</strong> ${formatDate(n.createdAt)}</div>
+      </div>
+      ${n.description ? `<div style="font-size:0.875rem;margin-bottom:12px;padding:10px;background:var(--gray-light);border-radius:8px">${n.description}</div>` : ''}
+      <div style="display:flex;gap:10px;align-items:center">
+        <input type="text" placeholder="Verification note (optional)" id="note_${n._id}" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.875rem"/>
+        <button class="btn btn-primary btn-sm" onclick="verifyNGO('${n._id}','verify')">✅ Approve</button>
+        <button class="btn btn-red btn-sm" onclick="verifyNGO('${n._id}','reject')">❌ Reject</button>
+      </div>
+    </div>`).join('');
+}
+
+async function loadAllNGOs() {
+  const el = document.getElementById('allNGOList');
+  const data = await API.get('/api/users/ngos/priority');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="icon">🏢</div><h4>No verified NGOs</h4></div>'; return; }
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px">' +
+    data.map(n => `
+      <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <strong>${n.organizationName||n.name}</strong>
+          <span class="badge ${n.isVerified?'badge-verified':'badge-pending'}">${n.isVerified?'✓ Verified':'⏳ Pending'}</span>
+        </div>
+        <div style="font-size:0.8rem;color:var(--gray);margin-bottom:8px">📂 ${n.ngoCategory||'—'} · 📍 ${n.address||'—'}</div>
+        <div style="display:flex;gap:16px;font-size:0.8rem">
+          <span>📥 Received: <strong>${n.totalReceived||0}</strong></span>
+          <span>✅ Distributed: <strong>${n.totalDistributed||0}</strong></span>
+        </div>
+        <div style="margin-top:8px">
+          <div style="font-size:0.75rem;color:var(--gray);margin-bottom:3px">Priority Score: ${n.priorityScore||0}/100</div>
+          <div class="priority-bar"><div class="priority-fill" style="width:${n.priorityScore||0}%"></div></div>
+        </div>
+      </div>`).join('') + '</div>';
+}
+
+async function loadRecyclable() {
+  const el = document.getElementById('recyclableList');
+  const data = await API.get('/api/donations?status=distributed');
+  const data2 = await API.get('/api/donations?status=picked');
+  const items = [...data, ...data2].filter(d => !d.isRecycled);
+  if (!items.length) { el.innerHTML = '<div class="empty-state"><div class="icon">♻️</div><h4>No recyclable items found</h4></div>'; return; }
+  el.innerHTML = items.map(d => `
+    <div class="list-item">
+      <div class="item-header">
+        <div>
+          <div class="item-title">${d.itemName}</div>
+          <div class="item-meta"><span>📂 ${d.category}</span><span>🔢 ${d.quantity}</span><span>${statusBadge(d.status)}</span></div>
+          ${d.ngoName ? `<div style="font-size:0.8rem;color:var(--gray);margin-top:3px">🏢 Given to: ${d.ngoName}</div>` : ''}
+        </div>
+        <button class="btn btn-sm" style="background:#fce7f3;color:#be185d" onclick="openRecycleModal('${d._id}')">♻️ Recycle</button>
+      </div>
+    </div>`).join('');
+}
+
+async function loadMoneyPage() {
+  const data = await API.get('/api/users/money-distributions');
+  const el = document.getElementById('pastDistributions');
+  if (!data.length) { el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray)">No distributions recorded yet</div>'; return; }
+  const catIcons = {student_education:'🎓',poor_food:'🍱',medical_aid:'💊',infrastructure:'🏗️',other:'📦'};
+  el.innerHTML = data.map(md => `
+    <div class="list-item">
+      <div style="font-weight:700">₹${md.totalRecycleAmount} — ${formatDate(md.createdAt)} <span style="font-weight:400;font-size:0.8rem;color:var(--gray)">by ${md.createdByName}</span></div>
+      ${md.distributions.map(d => `
+        <div style="display:flex;gap:10px;align-items:center;padding:4px 0;font-size:0.85rem;margin-top:4px">
+          <span>${catIcons[d.category]||'📦'}</span>
+          <span style="flex:1">${d.label}</span>
+          <strong>₹${d.amount}</strong>
+          <span style="color:var(--gray)">${d.beneficiaryCount} people</span>
+        </div>`).join('')}
+      ${md.note ? `<div style="font-size:0.8rem;color:var(--gray);margin-top:4px">📝 ${md.note}</div>` : ''}
+    </div>`).join('');
+}
+
+// Modal functions
+function openAssignModal(donationId) {
+  const officers = window._officers || [];
+  document.getElementById('assignDonationId').value = donationId;
+  document.getElementById('officerSelect').innerHTML = `<option value="">Select officer</option>` +
+    officers.map(o => `<option value="${o._id}">${o.name} (${o.badgeNumber||'—'}) — Zone: ${o.zone||'—'}</option>`).join('');
+  document.getElementById('assignModal').style.display = 'flex';
+}
+
+async function assignOfficer() {
+  const donationId = document.getElementById('assignDonationId').value;
+  const officerId = document.getElementById('officerSelect').value;
+  if (!officerId) return showToast('Please select an officer','error');
+  const r = await API.put(`/api/donations/${donationId}/assign-officer`, {officerId});
+  showToast(r.message || 'Assigned!', r.message ? 'success' : 'error');
+  closeModal('assignModal');
+  loadPending(); loadDashboard();
+}
+
+async function markPicked(id) {
+  if (!confirm('Mark this item as picked up?')) return;
+  const r = await API.put(`/api/donations/${id}/mark-picked`, {});
+  showToast(r.message || 'Done!', r.message ? 'success' : 'error');
+  loadMyPickups(); loadDashboard();
+}
+
+function openNGOModal(donationId, ngoDetails) {
+  document.getElementById('ngoModalDonationId').value = donationId;
+  let ngos;
+  try { ngos = JSON.parse(ngoDetails); } catch(e) { ngos = []; }
+  const el = document.getElementById('priorityNGOList');
+  if (!ngos.length) { el.innerHTML = '<div style="color:var(--gray)">No verified NGOs have requested this item</div>'; return; }
+  el.innerHTML = ngos.map((n,i) => `
+    <div class="priority-ngo-row ${i===0?'selected':''}" onclick="selectNGOInModal(this,'${n._id}')">
+      <div class="priority-score">${n.priorityScore||0}</div>
+      <div style="flex:1">
+        <div style="font-weight:700">${n.organizationName||n.name}</div>
+        <div style="font-size:0.8rem;color:var(--gray)">${n.totalReceived||0} received · ${n.totalDistributed||0} distributed</div>
+      </div>
+      ${i===0?'<span style="font-size:0.75rem;background:var(--green);color:white;padding:2px 8px;border-radius:8px">Top Priority</span>':''}
+    </div>`).join('');
+  document.getElementById('selectedNGOId').value = ngos[0]._id;
+  document.getElementById('ngoModal').style.display = 'flex';
+}
+
+function selectNGOInModal(el, ngoId) {
+  document.querySelectorAll('#priorityNGOList .priority-ngo-row').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('selectedNGOId').value = ngoId;
+}
+
+async function confirmAssignNGO() {
+  const donationId = document.getElementById('ngoModalDonationId').value;
+  const ngoId = document.getElementById('selectedNGOId').value;
+  if (!ngoId) return showToast('Please select an NGO','error');
+  console.log("Sending NGO ID:", ngoId);
+console.log("Donation ID:", donationId);
+  const r = await API.put(`/api/donations/${donationId}/assign-ngo`, {ngoId});
+  showToast(r.message || 'NGO Assigned!', r.message ? 'success' : 'error');
+  closeModal('ngoModal');
+  loadNGORequests(); loadDashboard();
+}
+
+function openSubmitModal(id) {
+  document.getElementById('submitDonationId').value = id;
+  document.getElementById('submitModal').style.display = 'flex';
+}
+
+async function confirmSubmit() {
+  const id = document.getElementById('submitDonationId').value;
+  const r = await API.put(`/api/donations/${id}/submit`, {});
+  showToast(r.message || 'Done!', r.message ? 'success' : 'error');
+  closeModal('submitModal');
+  loadNGORequests(); loadAllDonations(); loadDashboard();
+}
+
+function openRecycleModal(id) {
+  document.getElementById('recycleDonationId').value = id;
+  document.getElementById('r-value').value = '';
+  document.getElementById('r-note').value = '';
+  document.getElementById('recycleModal').style.display = 'flex';
+}
+
+async function confirmRecycle() {
+  const id = document.getElementById('recycleDonationId').value;
+  const recycleValue = document.getElementById('r-value').value;
+  const recycleNote = document.getElementById('r-note').value;
+  const r = await API.put(`/api/donations/${id}/recycle`, {recycleValue, recycleNote});
+  showToast(r.message || 'Recycled!', r.message ? 'success' : 'error');
+  closeModal('recycleModal');
+  loadAllDonations(); loadRecyclable(); loadDashboard();
+}
+
+async function verifyNGO(id, action) {
+  const note = document.getElementById('note_'+id)?.value || '';
+  const confirmMsg = action === 'verify' ? 'Approve this NGO?' : 'Reject this NGO?';
+  if (!confirm(confirmMsg)) return;
+  const r = await API.put(`/api/users/ngos/${id}/verify`, {action, note});
+  showToast(r.message, r.message ? 'success' : 'error');
+  loadPendingNGOs(); loadDashboard();
+}
+
+let distRowCount = 1;
+function addDistRow() {
+  const el = document.createElement('div');
+  el.className = 'money-cat';
+  el.innerHTML = `
+    <div class="form-grid">
+      <div class="form-group"><label>Category</label>
+        <select class="dr-cat">
+          <option value="student_education">🎓 Student Education</option>
+          <option value="poor_food">🍱 Food for Poor</option>
+          <option value="medical_aid">💊 Medical Aid</option>
+          <option value="infrastructure">🏗️ Infrastructure</option>
+          <option value="other">📦 Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Label</label><input class="dr-label" type="text" placeholder="Description label"/></div>
+      <div class="form-group"><label>Amount (₹)</label><input class="dr-amt" type="number" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Beneficiaries</label><input class="dr-ben" type="number" min="0" placeholder="0"/></div>
+      <div class="form-group form-full"><label>Description</label><input class="dr-desc" type="text" placeholder="Details"/></div>
+      <div><button class="btn btn-red btn-sm" onclick="this.closest('.money-cat').remove()">Remove</button></div>
+    </div>`;
+  document.getElementById('distRows').appendChild(el);
+  distRowCount++;
+}
+
+async function submitMoneyDist() {
+  const totalAmount = parseFloat(document.getElementById('m-amount').value);
+  if (!totalAmount || totalAmount <= 0) return showToast('Enter a valid total amount','error');
+  const rows = document.querySelectorAll('.money-cat');
+  const distributions = Array.from(rows).map(r => ({
+    category: r.querySelector('.dr-cat').value,
+    label: r.querySelector('.dr-label').value.trim(),
+    amount: parseFloat(r.querySelector('.dr-amt').value) || 0,
+    beneficiaryCount: parseInt(r.querySelector('.dr-ben').value) || 0,
+    description: r.querySelector('.dr-desc').value.trim()
+  })).filter(d => d.label && d.amount > 0);
+
+  if (!distributions.length) return showToast('Add at least one distribution category','error');
+  const note = document.getElementById('m-note').value.trim();
+  const r = await API.post('/api/users/money-distributions', {totalRecycleAmount: totalAmount, distributions, note});
+  showToast(r.message || 'Distribution saved!', r.message ? 'success' : 'error');
+  loadMoneyPage(); loadDashboard();
+}
+
+function selectNGO(el, ngoId) {
+  const container = el.closest('.form-card');
+  container.querySelectorAll('.priority-ngo-row').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+  const radio = el.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+}
+
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+window.onclick = e => { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; };
+</script>
+</body>
+</html>

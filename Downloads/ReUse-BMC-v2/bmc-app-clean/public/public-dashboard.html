@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Public Dashboard – ReUse BMC</title>
+<style>
+  :root { --green:#16a34a;--green-light:#dcfce7;--green-dark:#064e3b;--blue:#2563eb;--blue-light:#dbeafe;--orange:#ea580c;--orange-light:#ffedd5;--purple:#7c3aed;--purple-light:#ede9fe;--yellow:#d97706;--yellow-light:#fef3c7;--gray:#6b7280;--border:#e5e7eb; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#f8fafc;color:#111827}
+  /* HERO */
+  .hero{background:linear-gradient(135deg,#064e3b,#065f46,#047857);color:white;padding:48px 24px;text-align:center}
+  .hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:8px}
+  .hero p{opacity:0.85;max-width:560px;margin:0 auto 8px;line-height:1.6}
+  .hero-badge{display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:4px 16px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;color:#a7f3d0}
+  .back-link{color:rgba(255,255,255,0.7);font-size:0.875rem;text-decoration:none;display:inline-block;margin-bottom:16px}
+  .back-link:hover{color:white}
+  /* STATS HERO */
+  .stats-hero{display:flex;justify-content:center;flex-wrap:wrap;gap:20px;margin-top:28px}
+  .stat-hero-card{background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);border-radius:16px;padding:20px 28px;text-align:center;min-width:120px}
+  .stat-hero-card .num{font-size:2.2rem;font-weight:800;color:#6ee7b7;line-height:1}
+  .stat-hero-card .lbl{font-size:0.8rem;opacity:0.8;margin-top:4px}
+  /* CONTENT */
+  .container{max-width:1100px;margin:0 auto;padding:40px 20px}
+  .section-title{font-size:1.4rem;font-weight:800;margin-bottom:6px}
+  .section-sub{color:var(--gray);margin-bottom:24px;font-size:0.9rem}
+  /* CARDS */
+  .card{background:white;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:28px}
+  .card-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:white}
+  .card-header h3{font-size:1rem;font-weight:700}
+  .list-item{padding:16px 20px;border-bottom:1px solid #f3f4f6}
+  .list-item:last-child{border-bottom:none}
+  /* NGO GRID */
+  .ngo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:28px}
+  .ngo-card{background:white;border-radius:16px;border:1px solid var(--border);padding:18px}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:700}
+  .badge-verified{background:var(--green-light);color:var(--green)}
+  .badge-pending{background:var(--yellow-light);color:var(--yellow)}
+  .priority-bar{background:#e5e7eb;border-radius:20px;height:6px;overflow:hidden;margin-top:4px}
+  .priority-fill{height:100%;background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e)}
+  /* FLOW CHART */
+  .flow{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:24px;align-items:center}
+  .flow-step{background:white;border:2px solid var(--border);border-radius:12px;padding:12px 18px;text-align:center;font-size:0.85rem;font-weight:600;min-width:100px}
+  .flow-arrow{font-size:1.3rem;color:var(--gray)}
+  /* DISTRIBUTION */
+  .dist-card{background:white;border-radius:16px;border:1px solid var(--border);padding:20px;margin-bottom:14px}
+  .dist-bar{height:10px;border-radius:20px;margin-top:4px;margin-bottom:2px}
+  /* EVIDENCE */
+  .evidence-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .evidence-img{width:80px;height:80px;border-radius:8px;object-fit:cover;border:1px solid var(--border);cursor:pointer}
+  /* FOOTER */
+  footer{background:#111827;color:#9ca3af;text-align:center;padding:24px;font-size:0.875rem}
+  footer span{color:#6ee7b7}
+  /* RECYCLE SECTION */
+  .recycle-hero{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;padding:32px 24px;border-radius:20px;margin-bottom:28px}
+  .recycle-hero h2{font-size:1.4rem;font-weight:800;margin-bottom:8px}
+  .recycle-stats{display:flex;gap:24px;flex-wrap:wrap;margin-top:16px}
+  .recycle-stat .num{font-size:1.8rem;font-weight:800;color:#d8b4fe}
+  .recycle-stat .lbl{font-size:0.8rem;opacity:0.8}
+  @media(max-width:600px){.stats-hero{gap:12px}.stat-hero-card{padding:14px 18px}.flow{gap:4px}.flow-step{min-width:80px;font-size:0.75rem}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <a href="/" class="back-link">← Back to Home</a><br/>
+  <div class="hero-badge">🌐 100% Transparent</div>
+  <h1>Public Impact Dashboard</h1>
+  <p>Every donation, distribution, and rupee recycled — all visible to the public. No hidden data, full accountability.</p>
+  <div class="stats-hero" id="heroStats">
+    <div class="stat-hero-card"><div class="num" id="h-donations">—</div><div class="lbl">Total Donations</div></div>
+    <div class="stat-hero-card"><div class="num" id="h-distributed">—</div><div class="lbl">Items Distributed</div></div>
+    <div class="stat-hero-card"><div class="num" id="h-beneficiaries">—</div><div class="lbl">People Helped</div></div>
+    <div class="stat-hero-card"><div class="num" id="h-recycled">—</div><div class="lbl">Items Recycled</div></div>
+    <div class="stat-hero-card"><div class="num" id="h-recycle-value">—</div><div class="lbl">₹ Recycle Value</div></div>
+    <div class="stat-hero-card"><div class="num" id="h-ngos">—</div><div class="lbl">Verified NGOs</div></div>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- HOW DONATION FLOWS -->
+  <h2 class="section-title">How Every Donation Flows</h2>
+  <p class="section-sub">A completely transparent 7-step process from donor to beneficiary</p>
+  <div class="card" style="margin-bottom:28px">
+    <div class="flow">
+      <div class="flow-step" style="border-color:#6b7280;color:#374151">📋 Donor Lists Item</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:#2563eb;color:#2563eb">🚗 BMC Assigns Officer</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:#d97706;color:#d97706">📦 Item Picked Up</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:#7c3aed;color:#7c3aed">🏢 NGO Requested</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:#0e7490;color:#0e7490">📤 BMC Submits</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:#16a34a;color:#16a34a">✅ NGO Receives</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:#16a34a;color:#16a34a">🎁 Distributed</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:#be185d;color:#be185d">♻️ Leftover Recycled</div>
+    </div>
+  </div>
+
+  <!-- RECYCLE & MONEY -->
+  <div class="recycle-hero">
+    <h2>♻️ Recycle → Community Fund</h2>
+    <p style="opacity:0.85">Leftover donated items are recycled. The money goes directly to education, food for the poor, and medical aid.</p>
+    <div class="recycle-stats">
+      <div class="recycle-stat"><div class="num" id="r-count">0</div><div class="lbl">Items Recycled</div></div>
+      <div class="recycle-stat"><div class="num" id="r-value">₹0</div><div class="lbl">Total Recycle Value</div></div>
+      <div class="recycle-stat"><div class="num" id="r-dists">0</div><div class="lbl">Distribution Records</div></div>
+    </div>
+  </div>
+
+  <!-- MONEY DISTRIBUTIONS -->
+  <h2 class="section-title">💰 How Recycle Money Was Used</h2>
+  <p class="section-sub">Every rupee is accounted for — recorded by BMC Authority</p>
+  <div id="moneySection">
+    <div style="text-align:center;padding:40px;color:var(--gray)">Loading distribution records...</div>
+  </div>
+
+  <!-- RECENT DISTRIBUTIONS WITH EVIDENCE -->
+  <h2 class="section-title">🎁 Recent Distributions</h2>
+  <p class="section-sub">Items recently distributed to those in need — with photo evidence</p>
+  <div class="card">
+    <div class="card-body" id="recentDistributed">
+      <div style="text-align:center;padding:40px;color:var(--gray)">Loading...</div>
+    </div>
+  </div>
+
+  <!-- VERIFIED NGOS -->
+  <h2 class="section-title">🏢 Verified NGO Partners</h2>
+  <p class="section-sub">BMC-verified organizations that receive and distribute donations</p>
+  <div class="ngo-grid" id="ngoGrid">
+    <div style="text-align:center;padding:40px;color:var(--gray);grid-column:1/-1">Loading...</div>
+  </div>
+
+</div>
+
+<footer>
+  <p>© 2024 <span>ReUse BMC</span> — Data updated in real time · All records maintained by BMC Authority Mumbai</p>
+  <p style="margin-top:8px"><a href="/login" style="color:#6ee7b7">Login to Dashboard</a> · <a href="/" style="color:#6ee7b7">Home</a></p>
+</footer>
+
+<script>
+async function loadDashboard() {
+  try {
+    const data = await fetch('/api/users/public/dashboard').then(r => r.json());
+
+    // Hero stats
+    document.getElementById('h-donations').textContent = data.totalDonations || 0;
+    document.getElementById('h-distributed').textContent = data.distributed || 0;
+    document.getElementById('h-beneficiaries').textContent = data.totalBeneficiaries || 0;
+    document.getElementById('h-recycled').textContent = data.recycled || 0;
+    document.getElementById('h-recycle-value').textContent = '₹' + (data.totalRecycleValue || 0);
+    document.getElementById('h-ngos').textContent = data.verifiedNgos || 0;
+
+    // Recycle section
+    document.getElementById('r-count').textContent = data.recycled || 0;
+    document.getElementById('r-value').textContent = '₹' + (data.totalRecycleValue || 0);
+    document.getElementById('r-dists').textContent = data.moneyDistributed ? data.moneyDistributed.length : 0;
+
+    // Money distributions
+    const moneyEl = document.getElementById('moneySection');
+    if (!data.moneyDistributed || !data.moneyDistributed.length) {
+      moneyEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray);background:white;border-radius:16px;border:1px solid var(--border)">No distribution records yet — check back soon!</div>';
+    } else {
+      const catIcons = {student_education:'🎓',poor_food:'🍱',medical_aid:'💊',infrastructure:'🏗️',other:'📦'};
+      const catColors = {student_education:'#2563eb',poor_food:'#ea580c',medical_aid:'#16a34a',infrastructure:'#7c3aed',other:'#6b7280'};
+      moneyEl.innerHTML = data.moneyDistributed.map(md => {
+        const totalDist = md.distributions.reduce((a,d) => a+d.amount, 0);
+        return `
+          <div class="dist-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div>
+                <div style="font-weight:800;font-size:1.1rem">₹${md.totalRecycleAmount} Distributed</div>
+                <div style="font-size:0.85rem;color:var(--gray)">${formatDate(md.createdAt)} · By: ${md.createdByName}</div>
+              </div>
+              <div style="font-size:0.8rem;background:#f0fdf4;color:#16a34a;padding:4px 12px;border-radius:8px;font-weight:600">✅ Recorded</div>
+            </div>
+            ${md.distributions.map(d => {
+              const pct = totalDist > 0 ? Math.round((d.amount/totalDist)*100) : 0;
+              return `
+                <div style="margin-bottom:12px">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                    <span style="font-size:0.875rem;font-weight:600">${catIcons[d.category]||'📦'} ${d.label}</span>
+                    <span style="font-weight:700">₹${d.amount} (${pct}%)</span>
+                  </div>
+                  <div class="priority-bar"><div class="dist-bar priority-fill" style="width:${pct}%;background:${catColors[d.category]||'#6b7280'};height:100%"></div></div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-top:2px">
+                    <span>${d.description||''}</span>
+                    <span>${d.beneficiaryCount ? d.beneficiaryCount + ' people' : ''}</span>
+                  </div>
+                </div>`;
+            }).join('')}
+            ${md.note ? `<div style="font-size:0.8rem;color:var(--gray);margin-top:8px;padding:8px;background:#f9fafb;border-radius:8px">📝 ${md.note}</div>` : ''}
+          </div>`;
+      }).join('');
+    }
+
+    // Recent distributed
+    const distEl = document.getElementById('recentDistributed');
+    if (!data.recentDistributed || !data.recentDistributed.length) {
+      distEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray)">No distributions recorded yet</div>';
+    } else {
+      distEl.innerHTML = data.recentDistributed.map(d => `
+        <div class="list-item">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="flex:1">
+              <div style="font-weight:700;margin-bottom:4px">${d.itemName} <span style="font-size:0.8rem;color:var(--gray);font-weight:400">(${d.category})</span></div>
+              <div style="font-size:0.85rem;color:var(--gray)">🏢 ${d.ngoName||'—'} · 👤 Donated by ${d.donorName} · 📅 ${formatDate(d.distributedAt)}</div>
+              ${d.beneficiaryCount ? `<div style="font-size:0.8rem;color:var(--green);margin-top:3px;font-weight:600">👥 ${d.beneficiaryCount} people benefited</div>` : ''}
+              ${d.distributionNote ? `<div style="font-size:0.8rem;color:#374151;margin-top:4px">📝 ${d.distributionNote}</div>` : ''}
+              ${d.evidencePhotos && d.evidencePhotos.length ? `
+                <div class="evidence-grid">${d.evidencePhotos.map(p=>`<img src="${p}" class="evidence-img" onclick="window.open('${p}','_blank')" title="Click to view evidence"/>`).join('')}</div>` : ''}
+            </div>
+            <span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;white-space:nowrap">🎁 Distributed</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // NGO grid
+    const ngoEl = document.getElementById('ngoGrid');
+    if (!data.ngos || !data.ngos.length) {
+      ngoEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray);grid-column:1/-1">No verified NGOs yet</div>';
+    } else {
+      ngoEl.innerHTML = data.ngos.map(n => `
+        <div class="ngo-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="width:40px;height:40px;border-radius:10px;background:#ffedd5;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🏢</div>
+            <div>
+              <div style="font-weight:700;font-size:0.95rem">${n.organizationName||n.name}</div>
+              <span class="badge badge-verified">✓ BMC Verified</span>
+            </div>
+          </div>
+          <div style="font-size:0.8rem;color:var(--gray);margin-bottom:8px">📂 ${n.ngoCategory||'General'} ${n.address ? '· 📍 ' + n.address : ''}</div>
+          <div style="display:flex;gap:16px;font-size:0.8rem;margin-bottom:8px">
+            <span>📥 Received: <strong>${n.totalReceived||0}</strong></span>
+            <span>✅ Distributed: <strong>${n.totalDistributed||0}</strong></span>
+          </div>
+          <div style="font-size:0.75rem;color:var(--gray);margin-bottom:3px">Priority Score: ${n.priorityScore||0}/100</div>
+          <div class="priority-bar"><div class="priority-fill" style="width:${n.priorityScore||0}%"></div></div>
+          <div style="font-size:0.75rem;color:var(--gray);margin-top:4px">✅ Verified ${formatDate(n.verifiedAt)}</div>
+        </div>`).join('');
+    }
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function formatDate(str) {
+  if (!str) return '—';
+  return new Date(str).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+}
+
+loadDashboard();
+// Auto-refresh every 30s
+setInterval(loadDashboard, 30000);
+</script>
+</body>
+</html>

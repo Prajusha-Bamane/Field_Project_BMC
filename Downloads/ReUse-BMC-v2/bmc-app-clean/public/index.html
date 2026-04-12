@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ReUse BMC – Donate. Distribute. Recycle.</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  :root {
+    --green: #16a34a; --green-light: #dcfce7;
+    --blue: #2563eb; --blue-light: #dbeafe;
+    --orange: #ea580c; --orange-light: #ffedd5;
+    --purple: #7c3aed; --purple-light: #ede9fe;
+    --gray: #6b7280; --dark: #111827;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; color: var(--dark); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 40%, #047857 100%);
+    color: white; padding: 60px 24px 80px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(ellipse, rgba(255,255,255,0.05) 0%, transparent 60%);
+  }
+  .hero-badge {
+    display: inline-block; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 20px;
+    padding: 6px 18px; font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 20px; color: #a7f3d0;
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+  .hero h1 span { color: #6ee7b7; }
+  .hero p { font-size: clamp(1rem, 2vw, 1.2rem); opacity: 0.85; max-width: 580px; margin: 0 auto 32px; line-height: 1.7; }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+    background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+    border-radius: 16px; padding: 20px 32px; max-width: 580px; margin: 0 auto;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 2rem; font-weight: 800; color: #6ee7b7; line-height: 1; }
+  .hero-stat .lbl { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+
+  /* ROLES */
+  .section { padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+  .section-title { text-align: center; font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  .section-sub { text-align: center; color: var(--gray); margin-bottom: 40px; font-size: 1rem; }
+  .roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+
+  .role-card {
+    background: white; border-radius: 20px; padding: 36px 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 2px solid transparent;
+    text-align: center; transition: all 0.3s; cursor: pointer; text-decoration: none; color: inherit;
+    display: block; position: relative; overflow: hidden;
+  }
+  .role-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--card-bg, #f0fdf4);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .role-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); border-color: var(--card-color); }
+  .role-card:hover::before { opacity: 1; }
+  .role-card > * { position: relative; }
+
+  .role-card.donor { --card-color: var(--green); --card-bg: var(--green-light); }
+  .role-card.bmc   { --card-color: var(--blue); --card-bg: var(--blue-light); }
+  .role-card.ngo   { --card-color: var(--orange); --card-bg: var(--orange-light); }
+
+  .role-icon {
+    width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center; font-size: 2rem;
+  }
+  .donor .role-icon { background: var(--green-light); }
+  .bmc .role-icon   { background: var(--blue-light); }
+  .ngo .role-icon   { background: var(--orange-light); }
+
+  .role-card h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+  .donor h3 { color: var(--green); }
+  .bmc h3   { color: var(--blue); }
+  .ngo h3   { color: var(--orange); }
+
+  .role-card p { color: var(--gray); line-height: 1.6; margin-bottom: 20px; font-size: 0.95rem; }
+
+  .role-features { text-align: left; margin-bottom: 24px; }
+  .role-features li {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.88rem; color: #374151; padding: 4px 0;
+  }
+  .role-features li .dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .donor .dot { background: var(--green); }
+  .bmc .dot   { background: var(--blue); }
+  .ngo .dot   { background: var(--orange); }
+
+  .role-btn {
+    display: inline-block; padding: 12px 28px; border-radius: 12px;
+    font-weight: 700; font-size: 0.95rem; text-decoration: none;
+    transition: all 0.2s; width: 100%;
+  }
+  .donor .role-btn { background: var(--green); color: white; }
+  .bmc .role-btn   { background: var(--blue); color: white; }
+  .ngo .role-btn   { background: var(--orange); color: white; }
+  .role-btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+  /* HOW IT WORKS */
+  .how-section { background: white; padding: 60px 24px; }
+  .steps { display: flex; flex-wrap: wrap; gap: 0; max-width: 900px; margin: 0 auto; justify-content: center; }
+  .step { flex: 1; min-width: 160px; text-align: center; padding: 20px 12px; position: relative; }
+  .step::after {
+    content: '→'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+    font-size: 1.5rem; color: #d1d5db;
+  }
+  .step:last-child::after { display: none; }
+  .step-num {
+    width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #064e3b, #10b981);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem; margin: 0 auto 12px;
+  }
+  .step h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+  .step p { font-size: 0.8rem; color: var(--gray); line-height: 1.4; }
+
+  /* PUBLIC DASHBOARD LINK */
+  .public-banner {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: white; padding: 40px 24px; text-align: center;
+  }
+  .public-banner h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+  .public-banner p { opacity: 0.85; margin-bottom: 20px; }
+  .public-btn {
+    background: white; color: #7c3aed; font-weight: 700;
+    padding: 12px 32px; border-radius: 12px; text-decoration: none;
+    display: inline-block; font-size: 1rem; transition: all 0.2s;
+  }
+  .public-btn:hover { transform: scale(1.04); }
+
+  /* FOOTER */
+  footer { background: #111827; color: #9ca3af; text-align: center; padding: 24px; font-size: 0.875rem; }
+  footer span { color: #6ee7b7; }
+
+  @media (max-width: 600px) {
+    .steps { flex-direction: column; }
+    .step::after { content: '↓'; right: 50%; top: auto; bottom: -8px; transform: translateX(50%); }
+    .hero-stats { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🏛️ Mumbai BMC Initiative</div>
+  <h1>ReUse BMC<br/><span>Donate. Distribute. Recycle.</span></h1>
+  <p>A transparent platform connecting donors, BMC authority, and NGOs to ensure every donation reaches those who need it most — with full tracking and accountability.</p>
+  <div class="hero-stats" id="heroStats">
+    <div class="hero-stat"><div class="num" id="stat-donors">—</div><div class="lbl">Donors</div></div>
+    <div class="hero-stat"><div class="num" id="stat-donations">—</div><div class="lbl">Items Donated</div></div>
+    <div class="hero-stat"><div class="num" id="stat-ngos">—</div><div class="lbl">Verified NGOs</div></div>
+    <div class="hero-stat"><div class="num" id="stat-beneficiaries">—</div><div class="lbl">Beneficiaries</div></div>
+  </div>
+</section>
+
+<!-- CHOOSE YOUR ROLE -->
+<section class="section">
+  <h2 class="section-title">Choose Your Role</h2>
+  <p class="section-sub">Select your role to get started or login to your dashboard</p>
+  <div class="roles-grid">
+
+    <!-- DONOR -->
+    <a href="/register?role=donor" class="role-card donor">
+      <div class="role-icon">🤝</div>
+      <h3>Donor</h3>
+      <p>Have items you no longer need? List them and help someone in need. Track every step of your donation.</p>
+      <ul class="role-features">
+        <li><span class="dot"></span>List items with photos & GPS location</li>
+        <li><span class="dot"></span>Real-time donation tracking</li>
+        <li><span class="dot"></span>Earn reward points for each donation</li>
+        <li><span class="dot"></span>See all verified NGOs & BMC</li>
+        <li><span class="dot"></span>View recycling & impact dashboard</li>
+      </ul>
+      <span class="role-btn">Register as Donor →</span>
+    </a>
+
+    <!-- BMC AUTHORITY -->
+    <a href="/register?role=admin" class="role-card bmc">
+      <div class="role-icon">🏛️</div>
+      <h3>BMC Authority</h3>
+      <p>Manage the entire donation pipeline — assign officers, verify NGOs, and ensure fair distribution.</p>
+      <ul class="role-features">
+        <li><span class="dot"></span>View & assign pending donations</li>
+        <li><span class="dot"></span>Verify or reject NGO registrations</li>
+        <li><span class="dot"></span>Priority-based NGO assignment</li>
+        <li><span class="dot"></span>Mark items picked & submitted</li>
+        <li><span class="dot"></span>Manage recycling & money distribution</li>
+      </ul>
+      <span class="role-btn">Register as BMC Officer →</span>
+    </a>
+
+    <!-- NGO -->
+    <a href="/register?role=ngo" class="role-card ngo">
+      <div class="role-icon">🏢</div>
+      <h3>NGO</h3>
+      <p>Register your organization to receive donated items and distribute them to those who need them most.</p>
+      <ul class="role-features">
+        <li><span class="dot"></span>Register & get BMC verified badge</li>
+        <li><span class="dot"></span>Request available donation items</li>
+        <li><span class="dot"></span>Mark items received & distributed</li>
+        <li><span class="dot"></span>Upload evidence of distribution</li>
+        <li><span class="dot"></span>Build priority score for more items</li>
+      </ul>
+      <span class="role-btn">Register as NGO →</span>
+    </a>
+
+  </div>
+
+  <div style="text-align:center; margin-top:32px;">
+    <p style="color:#6b7280; margin-bottom:12px;">Already have an account?</p>
+    <a href="/login" style="background:#111827; color:white; padding:14px 40px; border-radius:12px; text-decoration:none; font-weight:700; font-size:1rem;">
+      Login to Dashboard →
+    </a>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div style="max-width:900px; margin:0 auto;">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Every donation follows a transparent, tracked process</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Donor Lists</h4>
+        <p>Donor uploads item with photos & GPS location</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>BMC Assigns</h4>
+        <p>BMC officer assigned to collect the item</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Item Picked</h4>
+        <p>Officer picks up & marks as collected</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>NGO Requests</h4>
+        <p>Verified NGOs request the item</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <h4>BMC Assigns</h4>
+        <p>BMC picks best NGO by priority score</p>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <h4>Submitted</h4>
+        <p>BMC submits item; NGO marks received</p>
+      </div>
+      <div class="step">
+        <div class="step-num">7</div>
+        <h4>Distributed</h4>
+        <p>NGO distributes with photo evidence</p>
+      </div>
+      <div class="step">
+        <div class="step-num">8</div>
+        <h4>Recycled</h4>
+        <p>Leftover recycled; money for education & poor</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLIC TRANSPARENCY -->
+<div class="public-banner">
+  <h2>🌐 Full Public Transparency</h2>
+  <p>Every donation, distribution, and recycled rupee is visible to everyone. No hidden data.</p>
+  <a href="/public-dashboard" class="public-btn">View Public Dashboard →</a>
+</div>
+
+<footer>
+  <p>© 2024 <span>ReUse BMC</span> — A Mumbai Civic Initiative for Transparent Donation Management</p>
+</footer>
+
+<script>
+  // Load public stats
+  fetch('/api/users/public/dashboard')
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('stat-donors').textContent = data.totalDonors || 0;
+      document.getElementById('stat-donations').textContent = data.totalDonations || 0;
+      document.getElementById('stat-ngos').textContent = data.verifiedNgos || 0;
+      document.getElementById('stat-beneficiaries').textContent = data.totalBeneficiaries || 0;
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>
