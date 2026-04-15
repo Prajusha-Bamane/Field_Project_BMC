@@ -1,12 +1,10 @@
 {
   "name": "ReUse BMC",
-  "short_name": "ReUseBMC",
-  "description": "Reuse & Donation Platform for Mumbai by BMC",
+  "short_name": "ReUse",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#16a34a",
   "theme_color": "#16a34a",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "/icon-192.png",
